@@ -1,0 +1,11 @@
+[general]
+name=Usemaps Lite
+qgisMinimumVersion=3.40
+version=0.1
+author=GIS Support
+email=info@gis-support.pl
+license=GPL-3.0-only
+description=Usemaps Lite
+about=Usemaps Lite
+repository=https://gis-support.pl/
+icon=resources/gissupport_logo.jpg
