@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/plugins/usemapslite" >
         <file>gissupport_logo.jpg</file>
+        <file>usemaps_pion_kolko.svg</file>
+        <file>usemaps_pion_kwadrat.svg</file>
     </qresource>
 </RCC>

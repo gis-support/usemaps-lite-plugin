@@ -2,13 +2,11 @@ import json
 from typing import Dict, List, Any
 import os 
 
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItem
 from qgis.PyQt.QtCore import Qt, QMetaType,  QDate, QDateTime, QTime
 from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QComboBox, QVBoxLayout, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox
-from qgis.PyQt.QtWidgets import QDialog
-from qgis.core import QgsIconUtils
 from qgis.core import (
     QgsVectorLayer,
     QgsProject,
@@ -24,6 +22,7 @@ from usemaps_lite.ui.import_layer import ImportLayerDialog
 from usemaps_lite.tools.event_handler import Event
 from usemaps_lite.tools.gpkg_handler import GpkgHandler
 from usemaps_lite.tools.user_mapper import USER_MAPPER
+from usemaps_lite.tools.translations import TRANSLATOR
 
 class Layers(BaseLogicClass, QObject):
     """
@@ -85,7 +84,7 @@ class Layers(BaseLogicClass, QObject):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd wczytywania warstwy: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('load layer')}: {error_msg}")
             return
 
         data = response.get("data")
@@ -124,9 +123,20 @@ class Layers(BaseLogicClass, QObject):
 
         layer.updateExtents()
         layer.beforeCommitChanges.connect(self.update_layer)
-        layer.setCustomProperty("usemaps_lite/layer_uuid", self.selected_layer_uuid)
 
-        QgsProject.instance().addMapLayer(layer)
+        project = QgsProject.instance()
+        custom_variables = project.customVariables()
+        stored_mappings = custom_variables.get("usemaps_lite/id") or ''
+        mappings = json.loads(stored_mappings) if stored_mappings else {}    
+
+        layer_qgis_id = layer.id()
+        
+        if layer_qgis_id not in mappings:
+            mappings[layer_qgis_id] = self.selected_layer_uuid
+            custom_variables["usemaps_lite/id"] = json.dumps(mappings)
+            project.setCustomVariables(custom_variables)
+
+        project.addMapLayer(layer)
 
     def browse_gpkg_file(self) -> None:
         """
@@ -135,9 +145,9 @@ class Layers(BaseLogicClass, QObject):
 
         file_path, _ = QtWidgets.QFileDialog.getOpenFileName(
             self.dockwidget,
-            "Wybierz plik GeoPackage",
+            TRANSLATOR.translate_ui("select_file"),
             "",
-            "Plik GeoPackage (*.gpkg)"
+            TRANSLATOR.translate_ui("file_filter")
         )
         if file_path:
             self.handle_gpkg_file_response(file_path)
@@ -178,7 +188,6 @@ class Layers(BaseLogicClass, QObject):
 
         self.upload_layer_to_api(temp_gpkg_path, is_temp_file=True)
 
-
     def upload_layer_to_api(self, file_path_to_upload: str, is_temp_file: bool) -> None:
         """
         Ogólna metoda do wysyłania pliku
@@ -192,14 +201,13 @@ class Layers(BaseLogicClass, QObject):
             callback=self.handle_upload_response_and_cleanup(file_path_to_upload, is_temp_file)
         )
 
-
     def handle_upload_response_and_cleanup(self, file_path_to_clean: str, is_temp_file: bool):
         """
         Obsługuje odpowiedź po próbie wgrania pliku gpkg.
         """
         def callback_func(response: Dict[str, Any]):
             if (error_msg := response.get("error")) is not None:
-                self.show_error_message(f"Błąd wgrywania warstwy: {error_msg}")
+                self.show_error_message(f"{TRANSLATOR.translate_error('import layer')}: {error_msg}")
             else:
                 self.import_layer_dialog.hide()
 
@@ -213,15 +221,25 @@ class Layers(BaseLogicClass, QObject):
         """
         Wykonuje request usunięcia z organizacji wybranej warstwy.
         """
-
-        selected_index = self.dockwidget.layers_listview.selectedIndexes()
-        uuid = selected_index[0].data(Qt.UserRole)
-
-        self.api.delete(
-            "org/layers",
-            {"uuid": uuid},
-            callback=self.handle_delete_layer_response
+        
+        reply = QMessageBox.question(
+            self.dockwidget,
+            TRANSLATOR.translate_ui("remove layer label"),
+            TRANSLATOR.translate_ui("remove user question"),
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
         )
+
+        if reply == QMessageBox.Yes:
+
+            selected_index = self.dockwidget.layers_listview.selectedIndexes()
+            uuid = selected_index[0].data(Qt.UserRole)
+
+            self.api.delete(
+                "org/layers",
+                {"uuid": uuid},
+                callback=self.handle_delete_layer_response
+            )
 
     def handle_delete_layer_response(self, response: Dict[str, Any]) -> None:
         """
@@ -229,7 +247,7 @@ class Layers(BaseLogicClass, QObject):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd usuwania warstwy: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('remove layer')}: {error_msg}")
 
 
     def on_layers_listview_selection_changed(self) -> None:
@@ -249,7 +267,13 @@ class Layers(BaseLogicClass, QObject):
 
         layer = self.sender()
         edit_buffer = layer.editBuffer()
-        layer_uuid = layer.customProperty("usemaps_lite/layer_uuid")
+
+        project = QgsProject.instance()
+        custom_variables = project.customVariables()
+        stored_mappings = custom_variables.get("usemaps_lite/id") or ''
+        mappings = json.loads(stored_mappings) if stored_mappings else {}    
+
+        layer_uuid = mappings.get(layer.id())
 
         payload = {"uuid": layer_uuid}
 
@@ -257,11 +281,11 @@ class Layers(BaseLogicClass, QObject):
         if to_add:
             payload['inserted'] = to_add
 
-        to_update = self.get_updated_features(edit_buffer)
+        to_update = self.get_updated_features(layer, edit_buffer)
         if to_update:
             payload['updated'] = to_update
 
-        to_delete = self.get_deleted_features(layer, edit_buffer)
+        to_delete = self.get_deleted_features(edit_buffer)
         if to_delete:
             payload['deleted'] = to_delete
 
@@ -277,7 +301,7 @@ class Layers(BaseLogicClass, QObject):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd edycji warstwy: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('edit layer')}: {error_msg}")
             return        
 
     def get_added_features(self, edit_buffer) -> Dict[str, Any]:
@@ -356,6 +380,27 @@ class Layers(BaseLogicClass, QObject):
             value = value.toString('hh:mm:ss')
         return value
 
+    def connect_layersremoved_signal(self, connect: bool):
+        """
+        Podłącza/rozłącza sygnał aktualizujący zmienną z mapowaniem id załadowanych warstw.
+        """
+        if connect:
+            QgsProject.instance().layersRemoved.connect(self.remove_layer_from_projects_mappings)
+        else:
+            QgsProject.instance().layersRemoved.disconnect(self.remove_layer_from_projects_mappings)
+
+    def remove_layer_from_projects_mappings(self, layer_qgis_ids: List[str]):
+        project = QgsProject.instance()
+        custom_variables = project.customVariables()
+        stored_mappings = custom_variables.get("usemaps_lite/id") or ''
+        mappings = json.loads(stored_mappings) if stored_mappings else {}    
+
+        for layer_qgis_id in layer_qgis_ids:
+            if layer_qgis_id in mappings:
+                del mappings[layer_qgis_id]
+
+        custom_variables["usemaps_lite/id"] = json.dumps(mappings)
+        project.setCustomVariables(custom_variables)
 
     def handle_deleted_layer_event(self, event_data: Dict[str, Any]) -> None:
         """
@@ -379,7 +424,7 @@ class Layers(BaseLogicClass, QObject):
 
         user_email = USER_MAPPER.get_user_email(event_data.get("user"))
 
-        self.show_info_message(f"Użytkownik {user_email} usunął warstwę {layer_name}")
+        self.show_info_message(f"{user_email} {TRANSLATOR.translate_info('removed layer')} {layer_name}")
 
     def handle_uploaded_layer_event(self, event_data: Dict[str, Any]) -> None:
         """
@@ -404,7 +449,7 @@ class Layers(BaseLogicClass, QObject):
 
         user_email = USER_MAPPER.get_user_email(event_data.get("user"))
 
-        self.show_info_message(f"Użytkownik {user_email} dodał warstwę {layer_name}")
+        self.show_info_message(f"{user_email} {TRANSLATOR.translate_ui('added layer')} {layer_name}")
 
     def handle_edited_layer_event(self, event_data: Dict[str, Any]) -> None:
         """
@@ -413,9 +458,76 @@ class Layers(BaseLogicClass, QObject):
 
         data = event_data.get("data")
         layer_name = data.get("name")
+        layer_uuid = data.get("uuid")
 
         user_email = USER_MAPPER.get_user_email(event_data.get("user"))
-        self.show_info_message(f"Użytkownik {user_email} edytował warstwę {layer_name}")
+
+        self.refresh_layer(layer_uuid)
+        
+        self.show_info_message(f"{user_email} {TRANSLATOR.translate_info('edited layer')} {layer_name}")
+
+    def refresh_layer(self, layer_uuid: str) -> None:
+        """
+        Pobiera najnowszą wersję warstwy
+        """
+
+        project = QgsProject.instance()
+        custom_variables = project.customVariables()
+        stored_mappings = custom_variables.get("usemaps_lite/id") or ''
+        mappings = json.loads(stored_mappings) if stored_mappings else {}    
+
+        layer_qgis_id = next((layer_qgis_id for layer_qgis_id, mapped_layer_uuid in mappings.items() if mapped_layer_uuid == layer_uuid), None)
+
+        if not layer_qgis_id:
+            # zaktualizowana warstwa nie jest wczytana do qgis, skip
+            return
+
+        self.refreshed_layer = project.mapLayer(layer_qgis_id)
+        
+        if self.refreshed_layer.isEditable():
+            # zaktualizowana warstwa jest aktualnie przez nas edytowana, nie nadpisujemy jej
+            return
+
+        self.api.get(
+            f"org/layers/{layer_uuid}/geojson",
+            callback=self.handle_refresh_layer_response
+        )
+
+    def handle_refresh_layer_response(self, response: Dict[str, Any]) -> None:
+
+        provider = self.refreshed_layer.dataProvider()
+
+        # odpinamy sygnał zeby nie robic zbednych strzalow do zapisu zmian
+        self.refreshed_layer.beforeCommitChanges.disconnect(self.update_layer)
+
+        self.refreshed_layer.startEditing()
+
+        all_ids = [f.id() for f in self.refreshed_layer.getFeatures()]
+        provider.deleteFeatures(all_ids)
+
+        fields = self.refreshed_layer.fields()
+        new_features = []
+
+        data = response.get("data")
+
+        for feat_data in data["features"]:
+            feat = QgsFeature()
+            feat.setFields(fields)
+
+            attributes = [feat_data["properties"].get(field.name()) for field in fields]
+            feat.setAttributes(attributes)
+
+            geometry = QgsJsonUtils.geometryFromGeoJson(json.dumps(feat_data.get("geometry")))
+            feat.setGeometry(geometry)
+
+            new_features.append(feat)
+
+        provider.addFeatures(new_features)
+        self.refreshed_layer.commitChanges()
+        self.refreshed_layer.updateExtents()
+
+        # przypinamy znowu
+        self.refreshed_layer.beforeCommitChanges.connect(self.update_layer)
 
     def handle_changed_limit_event(self, event_data: Dict[str, Any]) -> None:
         """

@@ -5,6 +5,8 @@ from qgis.PyQt.QtWidgets import QDialog
 from qgis.utils import iface
 from qgis.PyQt.QtCore import Qt
 
+from usemaps_lite.tools.translations import TRANSLATOR
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'verify_org.ui'))
 
@@ -25,6 +27,12 @@ class VerifyOrgDialog(QDialog, FORM_CLASS):
     def showEvent(self, event):
         super().showEvent(event)
         self.code_line.clear()
+
+        self.setWindowTitle(TRANSLATOR.translate_ui("verify org title"))
+        self.verify_label.setText(TRANSLATOR.translate_ui("verify_label"))
+        self.code_line.setPlaceholderText(TRANSLATOR.translate_ui("code_line"))
+        self.verify_button.setText(TRANSLATOR.translate_ui("ok"))
+        self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
 
     def verify_code(self, code: str):
         """

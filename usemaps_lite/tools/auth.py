@@ -1,7 +1,8 @@
 from typing import Dict, Any
 
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtGui import QIcon
+from PyQt5.Qt import QStandardItem
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsSettings
 
@@ -10,6 +11,9 @@ from usemaps_lite.ui.login import LoginDialog
 from usemaps_lite.ui.register import RegisterDialog
 from usemaps_lite.ui.verify_org import VerifyOrgDialog
 from usemaps_lite.tools.event_handler import Event
+from usemaps_lite.tools.metadata import ORGANIZATION_METADATA
+from usemaps_lite.tools.translations import TRANSLATOR
+
 
 class Auth(BaseLogicClass):
 
@@ -62,7 +66,7 @@ class Auth(BaseLogicClass):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd logowania: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('login')}: {error_msg.get('server_message')}")
             return
 
         settings = QgsSettings()
@@ -72,8 +76,10 @@ class Auth(BaseLogicClass):
 
         data = response.get("data")
         self.api.auth_token = data.get('token')
+        
+        ORGANIZATION_METADATA.set_logged_user_email(self.username)
         self.api.get("org/metadata", callback=self.handle_metadata_response)
-        self.show_success_message("Zalogowano się.")
+        self.show_success_message(TRANSLATOR.translate_info("logged in"))
         self.api.start_listening()
         self.login_dialog.hide()
 
@@ -83,9 +89,10 @@ class Auth(BaseLogicClass):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd pobierania metadanych organizacji: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('metadata')}: {error_msg.get('server_message')}")
 
         else:
+            self.dockwidget.events_tab.setEnabled(True)
             self.dockwidget.layers_tab.setEnabled(True)
             self.dockwidget.users_tab.setEnabled(True)
 
@@ -97,9 +104,18 @@ class Auth(BaseLogicClass):
             data = response.get("data")
             user_info = data.get('user')
             org_members_info = data.get('users')
+            limits_info = data.get('limits')
 
-            self.dockwidget.email_label.setText(f"Email: {user_info.get('email')}")
-            self.dockwidget.org_label.setText(f"Organizacja: {user_info.get('organizationName')}")
+            num_of_users_limit = limits_info.get('limitUsers')
+            
+            if len(org_members_info) == num_of_users_limit:
+                self.dockwidget.invite_user_button.setEnabled(False)
+
+            ORGANIZATION_METADATA.set_logged_user_email(user_info.get('email'))
+            ORGANIZATION_METADATA.set_num_of_users_limit(num_of_users_limit)
+            ORGANIZATION_METADATA.set_mb_limit(limits_info.get('limitMb'))
+
+            self.dockwidget.user_info_label.setText(f"{user_info.get('email')} z organizacji {user_info.get('organizationName')}")
             self.dockwidget.limit_progressbar.setValue(user_info.get('limitUsed'))
 
             num_of_users = 0
@@ -109,19 +125,30 @@ class Auth(BaseLogicClass):
                 num_of_users += 1
                 email = org_member.get('email')
                 user_uuid = org_member.get('uuid')
-                verified = 'Tak' if org_member.get('verified') else 'Nie'
+                verified = TRANSLATOR.translate_info("yes") if org_member.get('verified') else TRANSLATOR.translate_info("no")
+                is_online = org_member.get('online')
 
                 email_item = QStandardItem(email)
                 email_item.setData(user_uuid, Qt.UserRole)
 
+
+                online_icon_path = ":images/themes/default/repositoryDisabled.svg"
+                if is_online:
+                    online_icon_path = ":images/themes/default/repositoryConnected.svg"                   
+                
+                online_icon = QIcon(online_icon_path)
+                online_icon_item = QStandardItem()
+                online_icon_item.setIcon(online_icon)
+
                 row = [
                     email_item,
-                    QStandardItem(verified)
+                    QStandardItem(verified),
+                    online_icon_item
                 ]
 
                 self.dockwidget.users_tableview_model.appendRow(row)
 
-            self.dockwidget.org_members_label.setText(f"Członkowie organizacji ({num_of_users}/5)")
+            self.dockwidget.org_members_label.setText(f"{TRANSLATOR.translate_ui('coworkers')} ({num_of_users}/{ORGANIZATION_METADATA.get_num_of_users_limit()})")
 
             # wypełnianie listy z warstwami organizacji
             layers = data.get("layers", [])
@@ -147,9 +174,9 @@ class Auth(BaseLogicClass):
             for event_item in events:
                 event_name_str = event_item.get("name")
                 event_type = Event(event_name_str)
-                formatted_message = self.event_handler.format_event_message(event_item)
+                formatted_message, aligment, full_date_str = self.event_handler.format_event_message(event_item)
                 if formatted_message:
-                    self.event_handler.add_event_to_list_model(formatted_message, event_type)
+                    self.event_handler.add_event_to_list_model(formatted_message, event_type, aligment, full_date_str, add_to_top=True)
 
     def register(self):
         """
@@ -178,7 +205,7 @@ class Auth(BaseLogicClass):
         Obsługuje odpowiedź po próbie rejestracji w Usemaps Lite.
         """
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd rejestracji: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg.get('server_message')}")
 
         else:
             data = response.get("data")
@@ -203,7 +230,7 @@ class Auth(BaseLogicClass):
         Obsługuje odpowiedź po próbie weryfikacji rejestracji w Usemaps Lite.
         """
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"Błąd weryfikacji: {error_msg}")
+            self.show_error_message(f"{TRANSLATOR.translate_error('verification')}: {error_msg.get('server_message')}")
 
         else:
             data = response.get("data")
@@ -217,13 +244,13 @@ class Auth(BaseLogicClass):
         Wylogowuje aktualnie zalogowanego usera Usemaps Lite.
         """
         
+        self.dockwidget.events_tab.setEnabled(False)
         self.dockwidget.layers_tab.setEnabled(False)
         self.dockwidget.users_tab.setEnabled(False)
 
-        self.dockwidget.email_label.setText("Email:")
-        self.dockwidget.org_label.setText("Organizacja:")
+        self.dockwidget.user_info_label.setText(TRANSLATOR.translate_ui("user"))
         self.dockwidget.limit_progressbar.setValue(0)
-        self.dockwidget.org_members_label.setText("Członkowie organizacji")
+        self.dockwidget.org_members_label.setText(TRANSLATOR.translate_ui("coworkers"))
 
         self.api.auth_token = None
         self.api.stop_listening()

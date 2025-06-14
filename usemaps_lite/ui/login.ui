@@ -27,14 +27,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Logowanie&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="email_label">
      <property name="text">
       <string>Email</string>
      </property>
@@ -44,7 +37,7 @@
     <widget class="QLineEdit" name="log_email_line"/>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="password_label">
      <property name="text">
       <string>Hasło</string>
      </property>

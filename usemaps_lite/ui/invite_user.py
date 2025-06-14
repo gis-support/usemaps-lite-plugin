@@ -6,6 +6,8 @@ from qgis.PyQt.QtWidgets import QDialog
 from qgis.utils import iface
 from qgis.PyQt.QtCore import Qt
 
+from usemaps_lite.tools.translations import TRANSLATOR
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'invite_user.ui'))
 
@@ -27,6 +29,12 @@ class InviteUserDialog(QDialog, FORM_CLASS):
         super().showEvent(event)
         self.email_line.clear()
         self.invite_user_button.setEnabled(False)
+
+        self.setWindowTitle(TRANSLATOR.translate_ui("invite user title"))
+        self.label.setText(TRANSLATOR.translate_ui("invite user label"))
+        self.email_label.setText(TRANSLATOR.translate_ui("email_label"))
+        self.invite_user_button.setText(TRANSLATOR.translate_ui("invite"))
+        self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
 
     def verify_email(self, email: str):
         """

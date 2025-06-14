@@ -6,6 +6,8 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsSettings
 
+from usemaps_lite.tools.translations import TRANSLATOR
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'login.ui'))
 
@@ -24,8 +26,14 @@ class LoginDialog(QDialog, FORM_CLASS):
 
     def showEvent(self, event):
         super().showEvent(event)
-        settings = QgsSettings()
 
+        self.setWindowTitle(TRANSLATOR.translate_ui("login title"))
+        self.email_label.setText(TRANSLATOR.translate_ui("email_label"))
+        self.password_label.setText(TRANSLATOR.translate_ui("password_label"))
+        self.login_button.setText(TRANSLATOR.translate_ui("login_button"))
+        self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
+
+        settings = QgsSettings()
         username = settings.value("usemaps_lite/login", "", type=str)
         pwd = settings.value("usemaps_lite/pwd", "", type=str)
         

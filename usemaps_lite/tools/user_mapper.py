@@ -8,7 +8,7 @@ class UserMapper:
     def __init__(self):
         
         self.users_tableview_model = None
-        
+
     def set_users_model(self, users_tableview_model):
         
         self.users_tableview_model = users_tableview_model

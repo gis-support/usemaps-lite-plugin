@@ -16,7 +16,7 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="label_18">
+     <widget class="QLabel" name="info_label">
       <property name="text">
        <string>Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum</string>
       </property>
@@ -70,9 +70,9 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QLabel" name="label_9">
+       <widget class="QLabel" name="user_info_label">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Użytkownik&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Użytkownik</string>
         </property>
        </widget>
       </item>
@@ -98,38 +98,59 @@
      </layout>
     </item>
     <item>
-     <widget class="QLabel" name="email_label">
-      <property name="text">
-       <string>Email:</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="org_label">
-      <property name="text">
-       <string>Organizacja:</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="layers_tab">
+      <widget class="QWidget" name="events_tab">
        <attribute name="title">
-        <string>Warstwy</string>
+        <string>Powiadomienia</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QLabel" name="label_15">
+         <widget class="QLabel" name="recent_activities_label">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Dostępne warstwy&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Ostatnie aktywności</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_10">
+         <widget class="QListView" name="events_listview"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QLineEdit" name="comment_lineedit">
+            <property name="placeholderText">
+             <string>Dodaj komentarz...</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="add_comment_button">
+            <property name="text">
+             <string>Wyślij</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layers_tab">
+       <attribute name="title">
+        <string>Dane</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="available_layers_label">
+          <property name="text">
+           <string>Dostępne warstwy</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="layers_info_label">
           <property name="text">
            <string>lista warstw dostępnych dla Twojej organizacji</string>
           </property>
@@ -204,7 +225,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="label_12">
+         <widget class="QLabel" name="used_limit_label">
           <property name="text">
            <string>Wykorzystany limit:</string>
           </property>
@@ -218,49 +239,34 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Ostatnie aktywności&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QListView" name="events_listview"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLineEdit" name="comment_lineedit">
-            <property name="placeholderText">
-             <string>Dodaj komentarz...</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="add_comment_button">
-            <property name="text">
-             <string>Wyślij</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="users_tab">
        <attribute name="title">
-        <string>Twoja organizacja</string>
+        <string>Organizacja</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QLabel" name="org_members_label">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Członkowie organizacji&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Współpracownicy</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_14">
+         <widget class="QLabel" name="org_info_label">
           <property name="text">
            <string>lorem ipsum</string>
           </property>
@@ -293,7 +299,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Zaproś nowego członka</string>
+             <string>Zaproś Współpracownika</string>
             </property>
            </widget>
           </item>
@@ -325,7 +331,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Usuń członka</string>
+             <string>Usuń Współpracownika</string>
             </property>
            </widget>
           </item>

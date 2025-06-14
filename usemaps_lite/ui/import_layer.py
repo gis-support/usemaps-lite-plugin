@@ -5,6 +5,7 @@ from qgis.PyQt.QtWidgets import QDialog, QFrame
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.utils import iface
 
+from usemaps_lite.tools.translations import TRANSLATOR
 
 class DropFrame(QFrame):
     """
@@ -31,7 +32,7 @@ class DropFrame(QFrame):
             if file_path.lower().endswith('.gpkg'):
                 self.file_dropped.emit(file_path)
                 return
-        iface.messageBar().pushCritical("Usemaps Lite", f"Zły format pliku. Proszę wybrać plik w formacie .gpkg (GeoPackage).")
+        iface.messageBar().pushCritical("Usemaps Lite", TRANSLATOR.translate_error("wrong file format"))
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'import_layer.ui'))
@@ -62,4 +63,10 @@ class ImportLayerDialog(QDialog, FORM_CLASS):
         self.layer_combobox.clear()
         self.layer_label.setVisible(False)
         self.add_button.setVisible(False)
-        
+
+        self.setWindowTitle(TRANSLATOR.translate_ui("import layer title"))
+        self.select_file_button.setText(TRANSLATOR.translate_ui("select_file_button"))
+        self.select_file_label.setText(TRANSLATOR.translate_ui("select_file_label"))
+        self.layer_label.setText(TRANSLATOR.translate_ui("layer_label"))
+        self.add_button.setText(TRANSLATOR.translate_ui("add"))
+        self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))

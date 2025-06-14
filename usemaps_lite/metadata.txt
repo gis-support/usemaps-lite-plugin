@@ -8,4 +8,4 @@ license=GPL-3.0-only
 description=Usemaps Lite
 about=Usemaps Lite
 repository=https://gis-support.pl/
-icon=resources/gissupport_logo.jpg
+icon=resources/usemaps_pion_kwadrat.svg

@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QIcon
 
 from usemaps_lite.ui.dockwidget import Dockwidget
+from .resources import resources
 
 
 class UsemapsLite:
@@ -14,7 +15,7 @@ class UsemapsLite:
         self.dockwidget = Dockwidget()
 
         self.action = self.dockwidget.toggleViewAction()
-        icon = QIcon(":/plugins/usemapslite/gissupport_logo.jpg")
+        icon = QIcon(":/plugins/usemapslite/usemaps_pion_kwadrat.svg")
         self.action.setIcon(icon)
         self.action.setText("Usemaps Lite")
 
@@ -22,9 +23,12 @@ class UsemapsLite:
         self.toolbar.setObjectName("Usemaps Lite")
 
         self.toolbar.addAction(self.action)
+        
+        self.dockwidget.layers.connect_layersremoved_signal(True)
 
     def unload(self):
         self.iface.removePluginMenu
         self.toolbar.clear()
         self.toolbar.deleteLater()
+        self.dockwidget.layers.connect_layersremoved_signal(False)
         self.dockwidget.close()
