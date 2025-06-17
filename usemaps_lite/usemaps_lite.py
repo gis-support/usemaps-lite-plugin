@@ -15,7 +15,7 @@ class UsemapsLite:
         self.dockwidget = Dockwidget()
 
         self.action = self.dockwidget.toggleViewAction()
-        icon = QIcon(":/plugins/usemapslite/zielen_v1.png")
+        icon = QIcon(":/plugins/usemapslite/zielen_v1.jpg")
         self.action.setIcon(icon)
         self.action.setText("GIS.Box Lite")
 
