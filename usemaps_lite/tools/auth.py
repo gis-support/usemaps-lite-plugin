@@ -115,7 +115,7 @@ class Auth(BaseLogicClass):
             ORGANIZATION_METADATA.set_num_of_users_limit(num_of_users_limit)
             ORGANIZATION_METADATA.set_mb_limit(limits_info.get('limitMb'))
 
-            self.dockwidget.user_info_label.setText(f"{user_info.get('email')} z organizacji {user_info.get('organizationName')}")
+            self.dockwidget.user_info_label.setText(f"{user_info.get('email')} {TRANSLATOR.translate_ui('user_info_label')} {user_info.get('organizationName')}")
             self.dockwidget.limit_progressbar.setValue(user_info.get('limitUsed'))
 
             num_of_users = 0

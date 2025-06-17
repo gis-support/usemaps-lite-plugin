@@ -2,12 +2,12 @@ from qgis.PyQt.QtCore import QSettings
 
 
 TRANSLATIONS = {
-    "errors": {
+    "error": {
         "login": {"pl": "Błąd logowania", "en": "Login error"},
         "metadata": {"pl": "Błąd pobierania metadanych organizacji", "en": "Error getting organization metadata"},
         "register": {"pl": "Błąd rejestracji", "en": "Register error"},
         "comment": {"pl": "Błąd dodawania komentarza", "en": "Send comment error"},
-        "user exists": {"pl": "Zaproszony współpracownik już istnieje u Usemaps Lite. Każdy konto może być przypisane tylko do jednej Organizacji. Poproś współpracownika o usunięcie konta, aby dodać go do swojej organizacji (lub użyj innego adresu e-mail)", "en": "The invited coworker already exists in Usemaps Lite. Each account can only be assigned to one Organization. Ask the coworker to remove the account to add him to your organization (or use a different email address)"},
+        "user exists": {"pl": "Zaproszony współpracownik już istnieje w GIS.Box Lite. Każde konto może być przypisane tylko do jednej Organizacji. Poproś współpracownika o usunięcie konta, aby dodać go do swojej organizacji (lub użyj innego adresu e-mail)", "en": "The invited coworker already exists in GIS.Box Lite. Each account can only be assigned to one Organization. Ask the coworker to remove the account to add him to your organization (or use a different email address)"},
         "invite": {"pl": "Błąd wysyłania zaproszenia", "en": "Send invite error"},
         "remove user": {"pl": "Błąd usuwania współpracownika", "en": "Remove coworker error"},
         "load layer": {"pl": "Błąd wczytywania warstwy", "en": "Load layer error"},
@@ -18,12 +18,12 @@ TRANSLATIONS = {
         "verification": {"pl": "Błąd weryfikacji", "en": "Verification error"}
     },
     "ui": {
-        "info_label": {"pl": "Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum", "en": "Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum"},
-        "login_button": {"pl": "zaloguj się", "en": "login"},
-        "register_button": {"pl": "zarejestroj się", "en": "register"},
+        "info_label": {"pl": 'GIS.Box Lite to darmowa część platformy do współpracy na mapach GIS.Box, Pozwala na łatwą pracę zespołową w QGIS. Dowiedz się więcej na <a href="https://gis-support.pl/gis-box-lite">stronie GIS.Box Lite</a>.', "en": 'GIS.Box Lite is the free version of the GIS.Box platform for collaborative mapping. It enables easy teamwork in QGIS. Learn more on <a href="https://gis-support.pl/gis-box-lite">the GIS.Box Lite website</a>.'},
+        "login_button": {"pl": "Zaloguj się", "en": "Login"},
+        "register_button": {"pl": "Zarejestruj się", "en": "Register"},
         "user":  {"pl": "Użytkownik", "en": "User"},
         "user_info_label": {"pl": "z organizacji", "en": "from organization"},
-        "logout_button": {"pl": "wyloguj się", "en": "logout"},
+        "logout_button": {"pl": "Wyloguj się", "en": "Logout"},
         "events_tab": {"pl": "Powiadomienia", "en": "Notifications"},
         "layers_tab": {"pl": "Dane", "en": "Data"},
         "users_tab": {"pl": "Organizacja", "en": "Organization"},
@@ -36,7 +36,6 @@ TRANSLATIONS = {
         "remove_layer_button": {"pl": "Usuń warstwę", "en": "Remove layer"},
         "used_limit_label": {"pl": "Wykorzystany limit", "en": "Used limit"},
         "coworkers": {"pl": "Współpracownicy", "en": "Coworkers"},
-        "org_info_label": {"pl": "lorem ipsum", "en": "lorem ipsum"},
         "invite_user_button": {"pl": "Zaproś Współpracownika", "en": "Invite Coworker"},
         "remove_user_button": {"pl": "Usuń Współpracownika", "en": "Remove Coworker"},
         "remove user label": {"pl": "Usunięcie współpracownika", "en": "Remove coworker"},
@@ -115,7 +114,7 @@ class Translator:
         
     def translate_error(self, error_key: str) -> str:
 
-        return self.translate("erros", error_key)
+        return self.translate("error", error_key)
     
     def translate_ui(self, ui_key: str) -> str:
         

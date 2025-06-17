@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Usemaps Lite</string>
+   <string>GIS.Box Lite</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -262,13 +262,6 @@
          <widget class="QLabel" name="org_members_label">
           <property name="text">
            <string>Współpracownicy</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="org_info_label">
-          <property name="text">
-           <string>lorem ipsum</string>
           </property>
          </widget>
         </item>

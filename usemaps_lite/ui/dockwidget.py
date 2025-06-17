@@ -81,6 +81,5 @@ class Dockwidget(QtWidgets.QDockWidget, FORM_CLASS):
         # zakładka Organizacja
         self.tabWidget.setTabText(2, TRANSLATOR.translate_ui("users_tab"))
         self.org_members_label.setText(TRANSLATOR.translate_ui("coworkers"))
-        self.org_info_label.setText(TRANSLATOR.translate_ui("org_info_label"))
         self.invite_user_button.setText(TRANSLATOR.translate_ui("invite_user_button"))
         self.remove_user_button.setText(TRANSLATOR.translate_ui("remove_user_button"))

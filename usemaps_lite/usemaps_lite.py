@@ -15,12 +15,12 @@ class UsemapsLite:
         self.dockwidget = Dockwidget()
 
         self.action = self.dockwidget.toggleViewAction()
-        icon = QIcon(":/plugins/usemapslite/usemaps_pion_kwadrat.svg")
+        icon = QIcon(":/plugins/usemapslite/zielen_v1.png")
         self.action.setIcon(icon)
-        self.action.setText("Usemaps Lite")
+        self.action.setText("GIS.Box Lite")
 
-        self.toolbar = self.iface.addToolBar("Usemaps Lite")
-        self.toolbar.setObjectName("Usemaps Lite")
+        self.toolbar = self.iface.addToolBar("GIS.Box Lite")
+        self.toolbar.setObjectName("GIS.Box Lite")
 
         self.toolbar.addAction(self.action)
         
