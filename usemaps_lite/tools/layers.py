@@ -15,7 +15,8 @@ from qgis.core import (
     QgsField,
     QgsFields,
     NULL,
-    QgsFeatureRequest
+    QgsFeatureRequest,
+    QgsEditorWidgetSetup
 )
 
 from usemaps_lite.tools.base_logic_class import BaseLogicClass
@@ -24,6 +25,7 @@ from usemaps_lite.tools.event_handler import Event
 from usemaps_lite.tools.gpkg_handler import GpkgHandler
 from usemaps_lite.tools.user_mapper import USER_MAPPER
 from usemaps_lite.tools.translations import TRANSLATOR
+from usemaps_lite.tools.metadata import ORGANIZATION_METADATA
 
 class Layers(BaseLogicClass, QObject):
     """
@@ -110,6 +112,7 @@ class Layers(BaseLogicClass, QObject):
 
         provider.addAttributes(fields)
         layer.updateFields()
+        layer.setEditorWidgetSetup(layer.fields().indexOf('_id'), QgsEditorWidgetSetup('Hidden', {}))
 
         for feat_data in data["features"]:
             feat = QgsFeature()
@@ -311,28 +314,34 @@ class Layers(BaseLogicClass, QObject):
             self.show_error_message(f"{TRANSLATOR.translate_error('edit layer')}: {error_msg}")
             return        
 
-    def get_added_features(self, edit_buffer) -> Dict[str, Any]:
+    def get_added_features(self, edit_buffer) -> List[Dict[str, Any]]:
         """ 
-        Zwraca słownik z dodanymi obiektami do warstwy
+        Zwraca listę z dodanymi obiektami do warstwy
         """
 
         added_features = edit_buffer.addedFeatures().values()
-
         features_data = []
 
         for feature in added_features:
-            if feature.hasGeometry():
-                f = feature.__geo_interface__
-                features_data.append(f)
-            else:
-                attributes = feature.attributes()
-                names = feature.fields().names()
-                properties = {names[i]: self.sanetize_data_type(attributes[i]) if attributes[i] != NULL else None
-                              for i in range(len(names))}
+            attributes = feature.attributes()
+            names = feature.fields().names()
 
-                features_data.append(properties)
+            # Pomijamy _id w properties
+            properties = {
+                names[i]: self.sanetize_data_type(attributes[i]) if attributes[i] != NULL else None
+                for i in range(len(names)) if names[i] != "_id"
+            }
+
+            f = {
+                "type": "Feature",
+                "geometry": json.loads(feature.geometry().asJson()) if feature.hasGeometry() else None,
+                "properties": properties
+            }
+
+            features_data.append(f)
 
         return features_data
+
 
     def get_deleted_features(self, layer, edit_buffer) -> List[int]:
         """
@@ -340,37 +349,41 @@ class Layers(BaseLogicClass, QObject):
         """
         return [f["_id"] for f in layer.dataProvider().getFeatures( QgsFeatureRequest().setFilterFids( edit_buffer.deletedFeatureIds() ))]
 
-    def get_updated_features(self, layer, edit_buffer) -> Dict[str, Any]:
+    def get_updated_features(self, layer, edit_buffer) -> List[Dict[str, Any]]:
         """
-        Zwraca słownik z edytowanymi obiektami w warstwie.
+        Zwraca listę z edytowanymi obiektami w warstwie.
         """
 
         changed_attributes = edit_buffer.changedAttributeValues()
         changed_geometries = edit_buffer.changedGeometries()
 
-        fids = list(set(list(changed_attributes.keys()) +
-                    list(changed_geometries.keys())))
-
+        fids = list(set(changed_attributes.keys()) | set(changed_geometries.keys()))
         features = []
 
-        for feature in layer.getFeatures(fids):
-            if feature.hasGeometry():
-                f = feature.__geo_interface__
-                f['id'] = feature.id()
-                features.append(f)
+        for feature in layer.getFeatures(QgsFeatureRequest().setFilterFids(fids)):
+            attributes = feature.attributes()
+            names = feature.fields().names()
 
-            else:
-                attributes = feature.attributes()
-                names = feature.fields().names()
-                properties = {names[i]: self.sanetize_data_type(attributes[i]) if attributes[i] != NULL else None
-                              for i in range(len(names))}
+            # Ustawiamy ID z pola _id
+            feature_id = feature.attribute("_id")
 
-                features.append({
-                    'properties': properties,
-                    'id': feature.id()
-                })
+            # Pomijamy _id w properties
+            properties = {
+                names[i]: self.sanetize_data_type(attributes[i]) if attributes[i] != NULL else None
+                for i in range(len(names)) if names[i] != "_id"
+            }
+
+            f = {
+                "type": "Feature",
+                "id": feature_id,
+                "geometry": json.loads(feature.geometry().asJson()) if feature.hasGeometry() else None,
+                "properties": properties
+            }
+
+            features.append(f)
 
         return features
+
     
     def sanetize_data_type(self, value: Any) -> str:
         """
@@ -467,11 +480,11 @@ class Layers(BaseLogicClass, QObject):
 
         user_email = USER_MAPPER.get_user_email(event_data.get("user"))
 
-        self.refresh_layer(layer_uuid)
+        self.refresh_layer(layer_uuid, user_email)
         
         self.show_info_message(f"{user_email} {TRANSLATOR.translate_info('edited layer')} {layer_name}")
 
-    def refresh_layer(self, layer_uuid: str) -> None:
+    def refresh_layer(self, layer_uuid: str, user_email: str) -> None:
         """
         Pobiera najnowszą wersję warstwy
         """
@@ -489,8 +502,8 @@ class Layers(BaseLogicClass, QObject):
 
         self.refreshed_layer = project.mapLayer(layer_qgis_id)
         
-        if self.refreshed_layer.isEditable():
-            # zaktualizowana warstwa jest aktualnie przez nas edytowana, nie nadpisujemy jej
+        if self.refreshed_layer.isEditable() and user_email != ORGANIZATION_METADATA.get_logged_user_email():
+            # zaktualizowana warstwa jest aktualnie przez nas edytowana i to nie były nasze zmiany: nie nadpisujemy jej
             return
 
         self.api.get(
