@@ -66,7 +66,13 @@ class Auth(BaseLogicClass):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"{TRANSLATOR.translate_error('login')}: {error_msg.get('server_message')}")
+            
+            server_message = error_msg.get("server_message")
+            if server_message == 'invalid credentials':
+                self.show_error_message(TRANSLATOR.translate_error('invalid credentials'))
+
+            else:
+                self.show_error_message(f"{TRANSLATOR.translate_error('login')}: {error_msg.get('server_message')}")
             return
 
         settings = QgsSettings()
@@ -205,7 +211,22 @@ class Auth(BaseLogicClass):
         Obsługuje odpowiedź po próbie rejestracji w Usemaps Lite.
         """
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg.get('server_message')}")
+
+            server_message = error_msg.get('server_message')
+
+            if server_message == "user already exists":
+                self.show_error_message(TRANSLATOR.translate_error("register user exists"))
+
+            if 'validation errors' in server_message:
+                
+                if "'Email'" in server_message:
+                    self.show_error_message(TRANSLATOR.translate_error("email validation"))
+
+                elif "'Password'" in server_message:
+                    self.show_error_message(TRANSLATOR.translate_error("password validation"))
+
+            else:
+                self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg.get('server_message')}")
 
         else:
             data = response.get("data")

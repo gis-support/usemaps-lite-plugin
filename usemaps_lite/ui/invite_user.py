@@ -1,5 +1,4 @@
 import os
-import re
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog
@@ -7,6 +6,7 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import Qt
 
 from usemaps_lite.tools.translations import TRANSLATOR
+from usemaps_lite.tools.validators import validate_email
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'invite_user.ui'))
@@ -23,7 +23,7 @@ class InviteUserDialog(QDialog, FORM_CLASS):
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         self.cancel_button.clicked.connect(self.hide)
-        self.email_line.textChanged.connect(self.verify_email)
+        self.email_line.textChanged.connect(self.toggle_invite_user_button)
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -36,13 +36,6 @@ class InviteUserDialog(QDialog, FORM_CLASS):
         self.invite_user_button.setText(TRANSLATOR.translate_ui("invite"))
         self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
 
-    def verify_email(self, email: str):
-        """
-        Prosty walidator maili.
-        """
-
-        pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-
-        self.invite_user_button.setEnabled(False)
-        if re.match(pattern, email) is not None:
-            self.invite_user_button.setEnabled(True)
+    def toggle_invite_user_button(self, email: str):
+        
+        self.invite_user_button.setEnabled(validate_email(email))

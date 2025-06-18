@@ -14,7 +14,8 @@ from qgis.core import (
     QgsJsonUtils,
     QgsField,
     QgsFields,
-    NULL
+    NULL,
+    QgsFeatureRequest
 )
 
 from usemaps_lite.tools.base_logic_class import BaseLogicClass
@@ -95,6 +96,9 @@ class Layers(BaseLogicClass, QObject):
         fields = QgsFields()
 
         example_props = data["features"][0].get("properties", {})
+
+        fields.append(QgsField("_id", QMetaType.Int))
+
         for key, value in example_props.items():
             value_type = type(value)
             if value_type == int:
@@ -113,7 +117,10 @@ class Layers(BaseLogicClass, QObject):
 
             attributes = []
             for field in fields:
-                attributes.append(feat_data["properties"].get(field.name()))
+                if field.name() == "_id":
+                    attributes.append(feat_data.get("id"))
+                else:
+                    attributes.append(feat_data["properties"].get(field.name()))
             feat.setAttributes(attributes)
 
             geometry = QgsJsonUtils.geometryFromGeoJson(json.dumps(feat_data.get("geometry")))
@@ -285,7 +292,7 @@ class Layers(BaseLogicClass, QObject):
         if to_update:
             payload['updated'] = to_update
 
-        to_delete = self.get_deleted_features(edit_buffer)
+        to_delete = self.get_deleted_features(layer, edit_buffer)
         if to_delete:
             payload['deleted'] = to_delete
 
@@ -327,13 +334,11 @@ class Layers(BaseLogicClass, QObject):
 
         return features_data
 
-    def get_deleted_features(self, edit_buffer) -> List[int]:
+    def get_deleted_features(self, layer, edit_buffer) -> List[int]:
         """
         Zwraca listę z ID usuniętych obiektów z warstwy
         """
-
-        qgis_deleted_features_ids = edit_buffer.deletedFeatureIds()
-        return qgis_deleted_features_ids
+        return [f["_id"] for f in layer.dataProvider().getFeatures( QgsFeatureRequest().setFilterFids( edit_buffer.deletedFeatureIds() ))]
 
     def get_updated_features(self, layer, edit_buffer) -> Dict[str, Any]:
         """
@@ -514,7 +519,12 @@ class Layers(BaseLogicClass, QObject):
             feat = QgsFeature()
             feat.setFields(fields)
 
-            attributes = [feat_data["properties"].get(field.name()) for field in fields]
+            attributes = [
+                feat_data.get("id", "") if field.name() == "_id"
+                else feat_data["properties"].get(field.name())
+                for field in fields
+            ]
+
             feat.setAttributes(attributes)
 
             geometry = QgsJsonUtils.geometryFromGeoJson(json.dumps(feat_data.get("geometry")))

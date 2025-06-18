@@ -34,6 +34,7 @@ class Dockwidget(QtWidgets.QDockWidget, FORM_CLASS):
                                                               TRANSLATOR.translate_ui("verified"),
                                                               TRANSLATOR.translate_ui("online")])
         self.users_tableview.setModel(self.users_tableview_model)    
+        self.users_tableview.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         
         USER_MAPPER.set_users_model(self.users_tableview_model)
     

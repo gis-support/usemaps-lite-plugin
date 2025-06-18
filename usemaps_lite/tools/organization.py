@@ -105,9 +105,9 @@ class Organization(BaseLogicClass):
         """
 
         if (error_msg := response.get("error")) is not None:
-            
+
             if error_msg.get('server_message') == 'user already exists':
-                self.show_error_message(TRANSLATOR.translate_error("user exists"))
+                self.show_error_message(TRANSLATOR.translate_error("invite user exists"))
 
             else:
                 self.show_error_message(f"{TRANSLATOR.translate_error('invite')}: {error_msg.get('server_message')}")
@@ -210,6 +210,7 @@ class Organization(BaseLogicClass):
 
         data = event_data.get("data")
         user_uuid = data.get("uuid")
+        email = data.get("email")
 
         row_to_remove = -1
 
@@ -221,6 +222,10 @@ class Organization(BaseLogicClass):
 
         if row_to_remove != -1:
             self.dockwidget.users_tableview_model.removeRow(row_to_remove)
+
+        if email == ORGANIZATION_METADATA.get_logged_user_email():
+            self.show_info_message(TRANSLATOR.translate_info('removed from org'))
+            self.dockwidget.auth.logout()
 
         self.toggle_invite_user_button()
 

@@ -4,10 +4,14 @@ from qgis.PyQt.QtCore import QSettings
 TRANSLATIONS = {
     "error": {
         "login": {"pl": "Błąd logowania", "en": "Login error"},
-        "metadata": {"pl": "Błąd pobierania metadanych organizacji", "en": "Error getting organization metadata"},
+        "metadata": {"pl": "Błąd pobierania metadanych Organizacji", "en": "Error downloading Organization metadata"},
         "register": {"pl": "Błąd rejestracji", "en": "Register error"},
         "comment": {"pl": "Błąd dodawania komentarza", "en": "Send comment error"},
-        "user exists": {"pl": "Zaproszony współpracownik już istnieje w GIS.Box Lite. Każde konto może być przypisane tylko do jednej Organizacji. Poproś współpracownika o usunięcie konta, aby dodać go do swojej organizacji (lub użyj innego adresu e-mail)", "en": "The invited coworker already exists in GIS.Box Lite. Each account can only be assigned to one Organization. Ask the coworker to remove the account to add him to your organization (or use a different email address)"},
+        "register user exists": {"pl": "Podany adres e-mail jest już w bazie użytkowników GIS.Box Lite. W celu założenia nowego konta, użyj innego adresu e-mail, lub usuń konto przypisane do tego adresu (zaloguj się i usuń się z obecnej Organizacji).", "en": "The provided email address is already in the GIS.Box Lite user database. To create a new account, please use a different email address or delete the account associated with this address (log in and remove yourself from the current Organization)."},
+        "invite user exists": {"pl": "Zaproszony współpracownik już istnieje w GIS.Box Lite. Każde konto może być przypisane tylko do jednej Organizacji. Poproś współpracownika o usunięcie konta, aby dodać go do swojej Organizacji (lub użyj innego adresu e-mail)", "en": "The invited coworker already exists in GIS.Box Lite. Each account can only be assigned to one Organization. Ask the coworker to remove the account to add him to your Organization (or use a different email address)"},
+        "email validation": {"pl": "Błąd walidacji adresu email", "en": "Email address validation error"},
+        "password validation": {"pl": "Błąd walidacji hasła", "en": "Password validation error"},
+        "invalid credentials": {"pl": "Nieprawidłowe dane logowania", "en": "Invalid login credentials"},
         "invite": {"pl": "Błąd wysyłania zaproszenia", "en": "Send invite error"},
         "remove user": {"pl": "Błąd usuwania współpracownika", "en": "Remove coworker error"},
         "load layer": {"pl": "Błąd wczytywania warstwy", "en": "Load layer error"},
@@ -22,7 +26,7 @@ TRANSLATIONS = {
         "login_button": {"pl": "Zaloguj się", "en": "Login"},
         "register_button": {"pl": "Zarejestruj się", "en": "Register"},
         "user":  {"pl": "Użytkownik", "en": "User"},
-        "user_info_label": {"pl": "z organizacji", "en": "from organization"},
+        "user_info_label": {"pl": "z Organizacji", "en": "from Organization"},
         "logout_button": {"pl": "Wyloguj się", "en": "Logout"},
         "events_tab": {"pl": "Powiadomienia", "en": "Notifications"},
         "layers_tab": {"pl": "Dane", "en": "Data"},
@@ -31,7 +35,7 @@ TRANSLATIONS = {
         "comment_lineedit": {"pl": "Dodaj komentarz...", "en": "Add comment..."},
         "add_comment_button": {"pl": "Wyślij", "en": "Send"},
         "available_layers_label": {"pl": "Dostępne warstwy", "en": "Available layers"},
-        "layers_info_label": {"pl": "lista warstw dostępnych dla Twojej organizacji", "en": "list of layers available to Your Organization"},
+        "layers_info_label": {"pl": "Lista warstw dostępnych dla Twojej Organizacji. Naciśnij dwukrotnie na wybraną warstwę, żeby ją wczytać", "en": "List of layers available to Your Organization. Double click on chosen layer to load it."},
         "import_layer_button": {"pl": "Dodaj nową warstwę", "en": "Add new layer"},
         "remove_layer_button": {"pl": "Usuń warstwę", "en": "Remove layer"},
         "used_limit_label": {"pl": "Wykorzystany limit", "en": "Used limit"},
@@ -43,10 +47,10 @@ TRANSLATIONS = {
         "remove layer label": {"pl": "Usunięcie warstwy", "en": "Remove layer"},
         "remove user question": {"pl": "Czy na pewno chcesz usunąć warstwę? Tej operacji nie da się cofnąć", "en": "Are you sure you want to remove the layer? This operation cannot be undone"},
         "invite user title": {"pl": "Zaproś współpracownika", "en": "Invite coworker"},
-        "invite user label": {"pl": "W celu zaproszenia współpracownika,  podaj jego e-mail.  Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail.  Po weryfikacji,  dołączy do Twojej organizacji.", "en": "To invite a coworker, enter their email address. Your coworker will receive a message asking them to verify their email address. Once verified, they will join your organization."},
+        "invite user label": {"pl": "W celu zaproszenia współpracownika,  podaj jego e-mail.  Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail.  Po weryfikacji,  dołączy do Twojej organizacji.", "en": "To invite a coworker, enter their email address. Your coworker will receive a message asking them to verify their email address. Once verified, they will join Your Organization."},
         "invite": {"pl": "Zaproś", "en": "Invite"},
         "cancel": {"pl": "Anuluj", "en": "Cancel"},
-        "import layer title": {"pl": "Dodaj nową warstwę", "en": "Add new layer"},
+        "import layer title": {"pl": "Wgraj nową warstwę", "en": "Upload new layer"},
         "select_file_button": {"pl": "Wybierz plik", "en": "Select file"},
         "select_file_label": {"pl": "lub przeciągnij go tutaj (GeoPackage)", "en": "or drop it here (GeoPackage)"},
         "layer_label": {"pl": "Wybierz warstwę", "en": "Select layer"},
@@ -66,7 +70,8 @@ TRANSLATIONS = {
         "verified": {"pl": "Zweryfikowany", "en": "Verified"},
         "online": {"pl": "Online", "en": "Online"},
         "select_file": {"pl": "Wybierz plik GeoPackage", "en": "Select GeoPackage file"},
-        "file_filter": {"pl": "Plik GeoPackage (*.gpkg)", "en": "GeoPackage file (*.gpkg)"}
+        "file_filter": {"pl": "Plik GeoPackage (*.gpkg)", "en": "GeoPackage file (*.gpkg)"},
+        "removed": {"pl": "usunięty", "en": "removed"}
         
     },
     "info": {
@@ -88,7 +93,8 @@ TRANSLATIONS = {
         "added layer": {"pl": "dodał warstwę", "en": "added layer"},
         "edited layer": {"pl": "edytował warstwę", "en": "edited layer"},
         "yes": {"pl": "Tak", "en": "Yes"},
-        "no": {"pl": "Nie", "en": "No"}
+        "no": {"pl": "Nie", "en": "No"},
+        "removed from org": {"pl": "Twoje konto zostało usunięte z Organizacji", "en": "Your account has been removed from the Organization."},
     }
 }
 

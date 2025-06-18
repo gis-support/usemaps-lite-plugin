@@ -1,3 +1,5 @@
+from usemaps_lite.tools.translations import TRANSLATOR
+
 from qgis.PyQt.QtCore import Qt
 
 class UserMapper:
@@ -21,7 +23,7 @@ class UserMapper:
             item = self.users_tableview_model.item(user_row, 0)
             if item and item.data(Qt.UserRole) == user_uuid:
                 return item.text()
-        return "(usunięty)"
+        return f"({TRANSLATOR.translate_ui('removed')})"
 
     def get_user_uuid(self, user_email: str):
         """
@@ -33,6 +35,6 @@ class UserMapper:
             if item and item.text() == user_email:
                 uuid = item.data(Qt.UserRole)
                 return uuid
-        return "(usunięty)"
+        return f"({TRANSLATOR.translate_ui('removed')})"
 
 USER_MAPPER = UserMapper()

@@ -6,6 +6,7 @@ from qgis.utils import iface
 from qgis.PyQt.QtCore import Qt
 
 from usemaps_lite.tools.translations import TRANSLATOR
+from usemaps_lite.tools.validators import validate_email
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'register.ui'))
@@ -23,6 +24,13 @@ class RegisterDialog(QDialog, FORM_CLASS):
 
         self.cancel_button.clicked.connect(self.hide)
 
+        self.reg_email_line.textChanged.connect(self.handle_register_button)
+        self.reg_orgname_line.textChanged.connect(self.handle_register_button)
+        self.reg_pwd_line.textChanged.connect(self.handle_register_button)
+        self.reg_pwd_again_line.textChanged.connect(self.handle_register_button)
+        
+        self.register_button.setEnabled(False)
+
     def showEvent(self, event):
         super().showEvent(event)
         self.reg_email_line.clear()
@@ -37,3 +45,11 @@ class RegisterDialog(QDialog, FORM_CLASS):
         self.password_again_label.setText(TRANSLATOR.translate_ui("password_again_label"))
         self.register_button.setText(TRANSLATOR.translate_ui("register_button"))
         self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
+
+    def handle_register_button(self):
+
+        enabled = False
+        if self.reg_pwd_line.text() and self.reg_pwd_again_line.text() and self.reg_orgname_line.text() and self.reg_email_line.text() and validate_email(self.reg_email_line.text()):
+            enabled = True
+
+        self.register_button.setEnabled(enabled)
