@@ -10,6 +10,7 @@ from usemaps_lite.tools.base_logic_class import BaseLogicClass
 from usemaps_lite.ui.login import LoginDialog
 from usemaps_lite.ui.register import RegisterDialog
 from usemaps_lite.ui.verify_org import VerifyOrgDialog
+from usemaps_lite.ui.forgot_password import ForgotPasswordDialog
 from usemaps_lite.tools.event_handler import Event
 from usemaps_lite.tools.metadata import ORGANIZATION_METADATA
 from usemaps_lite.tools.translations import TRANSLATOR
@@ -32,14 +33,18 @@ class Auth(BaseLogicClass):
         self.login_dialog = LoginDialog()
         self.register_dialog = RegisterDialog()
         self.verify_org_dialog = VerifyOrgDialog()
+        self.forgot_password_dialog = ForgotPasswordDialog()
 
         self.dockwidget.login_button.clicked.connect(self.login_dialog.show)
         self.dockwidget.register_button.clicked.connect(self.register_dialog.show)
 
         self.login_dialog.login_button.clicked.connect(self.login)
+        self.login_dialog.forgot_pwd_button.clicked.connect(self.show_forgot_password_dialog)
         self.register_dialog.register_button.clicked.connect(self.register)
 
         self.verify_org_dialog.verify_button.clicked.connect(self.verify_org)
+
+        self.forgot_password_dialog.reset_button.clicked.connect(self.reset_password)
 
         self.dockwidget.logout_button.clicked.connect(self.logout)
 
@@ -222,8 +227,19 @@ class Auth(BaseLogicClass):
                 if "'Email'" in server_message:
                     self.show_error_message(TRANSLATOR.translate_error("email validation"))
 
-                elif "'Password'" in server_message:
-                    self.show_error_message(TRANSLATOR.translate_error("password validation"))
+                elif "'Password" in server_message:
+                    
+                    if 'failed validation: max' in server_message:
+                        self.show_error_message(TRANSLATOR.translate_error("password too long"))
+                    
+                    elif 'failed validation: min' in server_message:
+                        self.show_error_message(TRANSLATOR.translate_error("password too short"))
+                    
+                    elif 'failed validation: eqfield' in server_message:
+                        self.show_error_message(TRANSLATOR.translate_error("password not equal"))
+
+                    else:
+                        self.show_error_message(TRANSLATOR.translate_error("password validation"))
 
             else:
                 self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg.get('server_message')}")
@@ -288,3 +304,33 @@ class Auth(BaseLogicClass):
         self.dockwidget.layers_model.removeRows(0, self.dockwidget.layers_model.rowCount())
         self.dockwidget.events_listview_model.removeRows(0, self.dockwidget.events_listview_model.rowCount())
         self.dockwidget.comment_lineedit.clear()
+
+    def show_forgot_password_dialog(self) -> None:
+        
+        typed_email = self.login_dialog.log_email_line.text()
+        self.forgot_password_dialog.reset_email_line.setText(typed_email)
+        self.forgot_password_dialog.show()
+    
+    def reset_password(self):
+        
+        email = self.forgot_password_dialog.reset_email_line.text()
+
+        self.api.post(
+            "auth/reset",
+            {"email": email},
+            callback=self.handle_reset_password_response
+        )
+    
+    def handle_reset_password_response(self, response: Dict[str, Any]) -> None:
+
+        if (error_msg := response.get("error")) is not None:
+            
+            self.show_error_message(TRANSLATOR.translate_error("reset password"))
+            
+        else:
+            
+            self.forgot_password_dialog.hide()
+            self.login_dialog.hide()
+            
+            self.show_success_message(TRANSLATOR.translate_info("reset email send"))
+    

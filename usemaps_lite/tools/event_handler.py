@@ -146,7 +146,7 @@ class EventHandler(QObject):
 
         elif event_type == Event.DELETED_LAYER:
             layer_name = data.get("name", "N/A")
-            message = f"{TRANSLATOR.translate_info('deleted layer event')} {layer_name}"
+            message += f"{TRANSLATOR.translate_info('deleted layer event')} {layer_name}"
 
         else:
             return "", alignment, full_date_str

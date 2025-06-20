@@ -8,6 +8,8 @@ from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from PyQt5.QtNetwork import QHttpMultiPart, QHttpPart
 from PyQt5.QtCore import QFile, QIODevice
 
+from usemaps_lite.tools.translations import TRANSLATOR
+
 class ApiClient(QObject):
     event_received = pyqtSignal(str, object)
 
@@ -68,7 +70,7 @@ class ApiClient(QObject):
             error_msg_raw = reply.readAll().data().decode('utf-8', errors='ignore')
             parsed_error = {"error": reply.errorString(), "details": error_msg_raw}
             try:
-                json_error = json.loads(error_msg_raw).get("error")
+                json_error = json.loads(error_msg_raw).get("error", TRANSLATOR.translate_error('api error'))
                 if json_error:
                     parsed_error["server_message"] = json_error
             except json.JSONDecodeError:

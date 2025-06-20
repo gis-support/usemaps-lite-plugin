@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from qgis.PyQt.QtCore import QSettings
 
 
@@ -11,6 +13,9 @@ TRANSLATIONS = {
         "invite user exists": {"pl": "Zaproszony współpracownik już istnieje w GIS.Box Lite. Każde konto może być przypisane tylko do jednej Organizacji. Poproś współpracownika o usunięcie konta, aby dodać go do swojej Organizacji (lub użyj innego adresu e-mail)", "en": "The invited coworker already exists in GIS.Box Lite. Each account can only be assigned to one Organization. Ask the coworker to remove the account to add him to your Organization (or use a different email address)"},
         "email validation": {"pl": "Błąd walidacji adresu email", "en": "Email address validation error"},
         "password validation": {"pl": "Błąd walidacji hasła", "en": "Password validation error"},
+        "password too short": {"pl": "Podane hasło jest za krótkie", "en": "Password is too short"},
+        "password too long": {"pl": "Podane hasło jest za długie", "en": "Password is too long"},
+        "password not equal": {"pl": "Podane hasła nie są identyczne", "en": "Passwords are not equal"},
         "invalid credentials": {"pl": "Nieprawidłowe dane logowania", "en": "Invalid login credentials"},
         "invite": {"pl": "Błąd wysyłania zaproszenia", "en": "Send invite error"},
         "remove user": {"pl": "Błąd usuwania współpracownika", "en": "Remove coworker error"},
@@ -19,10 +24,14 @@ TRANSLATIONS = {
         "remove layer": {"pl": "Błąd usuwania warstwy", "en": "Remove layer error"},
         "edit layer": {"pl": "Błąd edycji warstwy", "en": "Edit layer error"},
         "wrong file format": {"pl": "Zły format pliku. Proszę wybrać plik w formacie .gpkg (GeoPackage)", "en": "Wrong file format. Please select a file in .gpkg (GeoPackage) format"},
-        "verification": {"pl": "Błąd weryfikacji", "en": "Verification error"}
+        "verification": {"pl": "Błąd weryfikacji", "en": "Verification error"},
+        "gpkg too large": {"pl": "Nie można przesłać pliku. Przekroczono dostępny limit przestrzeni w bazie danych (maksymalnie {mb_limit} MB)", "en": "Cannot upload the file. The available database storage limit has been exceeded (maximum {mb_limit} MB)"},
+        "ogr error": {"pl": "Wystąpił błąd serwera przy wgrywaniu warstwy.", "en": "A server error occurred while uploading the layer."},
+        "reset password": {"pl": "Błąd resetowania hasła", "en": "Password reset error"},
+        "api error": {"pl": "Błąd połączenia z serwerem", "en": "Server connection error"}
     },
     "ui": {
-        "info_label": {"pl": 'GIS.Box Lite to darmowa część platformy do współpracy na mapach GIS.Box, Pozwala na łatwą pracę zespołową w QGIS. Dowiedz się więcej na <a href="https://gis-support.pl/gis-box-lite">stronie GIS.Box Lite</a>.', "en": 'GIS.Box Lite is the free version of the GIS.Box platform for collaborative mapping. It enables easy teamwork in QGIS. Learn more on <a href="https://gis-support.pl/gis-box-lite">the GIS.Box Lite website</a>.'},
+        "info_label": {"pl": 'GIS.Box Lite to darmowa część platformy do współpracy na mapach GIS.Box. Pozwala na łatwą pracę zespołową w QGIS. Dowiedz się więcej na <a href="https://gis-support.pl/gis-box-lite">stronie GIS.Box Lite</a>.', "en": 'GIS.Box Lite is the free version of the GIS.Box platform for collaborative mapping. It enables easy teamwork in QGIS. Learn more on <a href="https://gis-support.pl/gis-box-lite">the GIS.Box Lite website</a>.'},
         "login_button": {"pl": "Zaloguj się", "en": "Login"},
         "register_button": {"pl": "Zarejestruj się", "en": "Register"},
         "user":  {"pl": "Użytkownik", "en": "User"},
@@ -36,7 +45,7 @@ TRANSLATIONS = {
         "add_comment_button": {"pl": "Wyślij", "en": "Send"},
         "available_layers_label": {"pl": "Dostępne warstwy", "en": "Available layers"},
         "layers_info_label": {"pl": "Lista warstw dostępnych dla Twojej Organizacji. Naciśnij dwukrotnie na wybraną warstwę, żeby ją wczytać", "en": "List of layers available to Your Organization. Double click on chosen layer to load it."},
-        "import_layer_button": {"pl": "Dodaj nową warstwę", "en": "Add new layer"},
+        "import_layer_button": {"pl": "Prześlij warstwę do GIS.Box Lite", "en": "Upload layer to GIS.Box Lite"},
         "remove_layer_button": {"pl": "Usuń warstwę", "en": "Remove layer"},
         "used_limit_label": {"pl": "Wykorzystany limit", "en": "Used limit"},
         "coworkers": {"pl": "Współpracownicy", "en": "Coworkers"},
@@ -45,7 +54,8 @@ TRANSLATIONS = {
         "remove user label": {"pl": "Usunięcie współpracownika", "en": "Remove coworker"},
         "remove user question": {"pl": "Czy na pewno chcesz usunąć współpracownika? Tej operacji nie da się cofnąć", "en": "Are you sure you want to remove the coworker? This operation cannot be undone"},
         "remove layer label": {"pl": "Usunięcie warstwy", "en": "Remove layer"},
-        "remove user question": {"pl": "Czy na pewno chcesz usunąć warstwę? Tej operacji nie da się cofnąć", "en": "Are you sure you want to remove the layer? This operation cannot be undone"},
+        "remove layer question 1": {"pl": "Czy na pewno chcesz usunąć warstwę", "en": "Are you sure you want to remove the layer"},
+        "remove layer question 2": {"pl": "? Tej operacji nie da się cofnąć", "en": "? This operation cannot be undone"},
         "invite user title": {"pl": "Zaproś współpracownika", "en": "Invite coworker"},
         "invite user label": {"pl": "W celu zaproszenia współpracownika,  podaj jego e-mail.  Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail.  Po weryfikacji,  dołączy do Twojej organizacji.", "en": "To invite a coworker, enter their email address. Your coworker will receive a message asking them to verify their email address. Once verified, they will join Your Organization."},
         "invite": {"pl": "Zaproś", "en": "Invite"},
@@ -71,8 +81,12 @@ TRANSLATIONS = {
         "online": {"pl": "Online", "en": "Online"},
         "select_file": {"pl": "Wybierz plik GeoPackage", "en": "Select GeoPackage file"},
         "file_filter": {"pl": "Plik GeoPackage (*.gpkg)", "en": "GeoPackage file (*.gpkg)"},
-        "removed": {"pl": "usunięty", "en": "removed"}
-        
+        "removed": {"pl": "usunięty", "en": "removed"},
+        "password_hint_label": {"pl": '<html><head/><body><p><span style=" font-size:10pt;">Hasło musi składać się z minimum 8 znaków</span></p></body></html>', "en": '<html><head/><body><p><span style=" font-size:10pt;">The password must be at least 8 characters long</span></p></body></html>'},
+        "reset pwd title": {"pl": "Resetuj hasło", "en": "Reset password"},
+        "reset_pwd_info_label": {"pl": "Podaj adres email konta GIS.Box Lite,  na który przesłana zostanie instrukcja resetowania hasła.", "en": "Enter the email address of the GIS.Box Lite account to which the password reset instructions will be sent."},
+        "reset_button": {"pl": "Resetuj", "en": "Reset"},
+        "forgot_pwd_button": {"pl": "Zapomniano hasła?", "en": "Forgot password?"}
     },
     "info": {
         "invited user event": {"pl": "zaproszono współpracownika", "en": "invited coworker"},
@@ -95,6 +109,12 @@ TRANSLATIONS = {
         "yes": {"pl": "Tak", "en": "Yes"},
         "no": {"pl": "Nie", "en": "No"},
         "removed from org": {"pl": "Twoje konto zostało usunięte z Organizacji", "en": "Your account has been removed from the Organization."},
+        "load layer start": {"pl": "Rozpoczęto wczytywanie warstwy", "en": "Started loading layer"},
+        "load layer success": {"pl": "Pomyślnie wczytano warstwę", "en": "Layer loaded successfully"},
+        "layer loading": {"pl": "Wczytywanie warstwy", "en": "Loading layer"},
+        "import layer start": {"pl": "Rozpoczęto przesyłanie warstwy", "en": "Started uploading layer"},
+        "import layer success": {"pl": "Pomyślnie przesłano warstwę", "en": "Layer uploaded successfully"},
+        "reset email send": {"pl": "Wysłano email resetu hasła", "en": "Password reset email has been sent"},
     }
 }
 
@@ -118,9 +138,13 @@ class Translator:
         
         return translation
         
-    def translate_error(self, error_key: str) -> str:
+    def translate_error(self, error_key: str, params: Dict[str, Any] = None) -> str:
 
-        return self.translate("error", error_key)
+        translated_text = self.translate("error", error_key)
+        if params:
+            translated_text = translated_text.format(**params)
+
+        return translated_text
     
     def translate_ui(self, ui_key: str) -> str:
         

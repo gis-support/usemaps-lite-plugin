@@ -45,6 +45,7 @@ class RegisterDialog(QDialog, FORM_CLASS):
         self.password_again_label.setText(TRANSLATOR.translate_ui("password_again_label"))
         self.register_button.setText(TRANSLATOR.translate_ui("register_button"))
         self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
+        self.password_hint_label.setText(TRANSLATOR.translate_ui("password_hint_label"))
 
     def handle_register_button(self):
 

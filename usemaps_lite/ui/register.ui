@@ -57,6 +57,13 @@
     <widget class="QgsPasswordLineEdit" name="reg_pwd_line"/>
    </item>
    <item>
+    <widget class="QLabel" name="password_hint_label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Hasło musi składać się z minimum 8 znaków&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="password_again_label">
      <property name="text">
       <string>Powtórz hasło</string>

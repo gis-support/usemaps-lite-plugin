@@ -32,6 +32,7 @@ class LoginDialog(QDialog, FORM_CLASS):
         self.password_label.setText(TRANSLATOR.translate_ui("password_label"))
         self.login_button.setText(TRANSLATOR.translate_ui("login_button"))
         self.cancel_button.setText(TRANSLATOR.translate_ui("cancel"))
+        self.forgot_pwd_button.setText(TRANSLATOR.translate_ui("forgot_pwd_button"))
 
         settings = QgsSettings()
         username = settings.value("usemaps_lite/login", "", type=str)

@@ -21,18 +21,18 @@ class BaseLogicClass:
         Wyświetla dymek z błędem.
         """
 
-        iface.messageBar().pushCritical("Usemaps Lite", message)
+        iface.messageBar().pushCritical("GIS.Box Lite", message)
 
     def show_success_message(self, message: str) -> None:
         """
         Wyświetla dymek z sukcesem.
         """
 
-        iface.messageBar().pushSuccess("Usemaps Lite", message)
+        iface.messageBar().pushSuccess("GIS.Box Lite", message)
     
     def show_info_message(self, message: str) -> None:
         """
         Wyświetla dymek z info.
         """
 
-        iface.messageBar().pushInfo("Usemaps Lite", message)
+        iface.messageBar().pushInfo("GIS.Box Lite", message)
