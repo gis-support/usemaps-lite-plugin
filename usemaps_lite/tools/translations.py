@@ -24,7 +24,7 @@ TRANSLATIONS = {
         "remove layer": {"pl": "Błąd usuwania warstwy", "en": "Remove layer error"},
         "edit layer": {"pl": "Błąd edycji warstwy", "en": "Edit layer error"},
         "wrong file format": {"pl": "Zły format pliku. Proszę wybrać plik w formacie .gpkg (GeoPackage)", "en": "Wrong file format. Please select a file in .gpkg (GeoPackage) format"},
-        "verification": {"pl": "Błąd weryfikacji", "en": "Verification error"},
+        "verification": {"pl": "Wystąpił błąd weryfikacji. Upewnij się, że podano poprawny kod.", "en": "Verification error occurred. Please make sure the correct code was entered."},
         "gpkg too large": {"pl": "Nie można przesłać pliku. Przekroczono dostępny limit przestrzeni w bazie danych (maksymalnie {mb_limit} MB)", "en": "Cannot upload the file. The available database storage limit has been exceeded (maximum {mb_limit} MB)"},
         "ogr error": {"pl": "Wystąpił błąd serwera przy wgrywaniu warstwy.", "en": "A server error occurred while uploading the layer."},
         "reset password": {"pl": "Błąd resetowania hasła", "en": "Password reset error"},

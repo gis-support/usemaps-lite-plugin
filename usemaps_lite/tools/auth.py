@@ -194,18 +194,18 @@ class Auth(BaseLogicClass):
         Wykonuje request rejestracji w Usemaps Lite.
         """
 
-        username = self.register_dialog.reg_email_line.text()
+        self.username = self.register_dialog.reg_email_line.text()
         orgname = self.register_dialog.reg_orgname_line.text()
-        pwd = self.register_dialog.reg_pwd_line.text()
+        self.pwd = self.register_dialog.reg_pwd_line.text()
         pwd_again = self.register_dialog.reg_pwd_again_line.text()
 
 
         self.api.post(
             "auth/register",
             {
-                "email": username,
+                "email": self.username,
                 "name": orgname,
-                "password": pwd,
+                "password": self.pwd,
                 "passwordRepeat": pwd_again
             },
             callback=self.handle_register_response
@@ -266,16 +266,19 @@ class Auth(BaseLogicClass):
         """
         Obsługuje odpowiedź po próbie weryfikacji rejestracji w Usemaps Lite.
         """
-        if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"{TRANSLATOR.translate_error('verification')}: {error_msg.get('server_message')}")
+        if response.get("error")is not None:
+            self.show_error_message(TRANSLATOR.translate_error("verification"))
 
         else:
-            data = response.get("data")
             self.verify_org_dialog.hide()
             self.register_dialog.hide()
-            self.api.auth_token = data.get('token')
-            self.api.get("org/metadata", callback=self.handle_metadata_response)
-        
+
+            self.api.post(
+                "auth/login",
+                {"email": self.username, "password": self.pwd},
+                callback=self.handle_login_response
+            )
+
     def logout(self):
         """
         Wylogowuje aktualnie zalogowanego usera Usemaps Lite.
