@@ -28,14 +28,15 @@ TRANSLATIONS = {
         "gpkg too large": {"pl": "Nie można przesłać pliku. Przekroczono dostępny limit przestrzeni w bazie danych (maksymalnie {mb_limit} MB)", "en": "Cannot upload the file. The available database storage limit has been exceeded (maximum {mb_limit} MB)"},
         "ogr error": {"pl": "Wystąpił błąd serwera przy wgrywaniu warstwy.", "en": "A server error occurred while uploading the layer."},
         "reset password": {"pl": "Błąd resetowania hasła", "en": "Password reset error"},
-        "api error": {"pl": "Błąd połączenia z serwerem", "en": "Server connection error"}
+        "api error": {"pl": "Błąd połączenia z serwerem", "en": "Server connection error"},
+        "limit exceeded": {"pl": "Wykorzystano dostępny limit na dane w GIS.Box Lite. Aby kontynuować, usuń część danych lub skontaktuj się z zespołem GIS Support", "en": "The available data limit in GIS.Box Lite has been reached. To continue, please delete some data or contact the GIS Support team"}
     },
     "ui": {
         "info_label": {"pl": 'GIS.Box Lite to darmowa część platformy do współpracy na mapach GIS.Box. Pozwala na łatwą pracę zespołową w QGIS. Dowiedz się więcej na <a href="https://gis-support.pl/gis-box-lite">stronie GIS.Box Lite</a>.', "en": 'GIS.Box Lite is the free version of the GIS.Box platform for collaborative mapping. It enables easy teamwork in QGIS. Learn more on <a href="https://gis-support.pl/gis-box-lite">the GIS.Box Lite website</a>.'},
         "login_button": {"pl": "Zaloguj się", "en": "Login"},
         "register_button": {"pl": "Zarejestruj się", "en": "Register"},
         "user":  {"pl": "Użytkownik", "en": "User"},
-        "user_info_label": {"pl": "z Organizacji", "en": "from Organization"},
+        "user_info_label": {"pl": "z organizacji", "en": "from organization"},
         "logout_button": {"pl": "Wyloguj się", "en": "Logout"},
         "events_tab": {"pl": "Powiadomienia", "en": "Notifications"},
         "layers_tab": {"pl": "Dane", "en": "Data"},
@@ -57,12 +58,12 @@ TRANSLATIONS = {
         "remove layer question 1": {"pl": "Czy na pewno chcesz usunąć warstwę", "en": "Are you sure you want to remove the layer"},
         "remove layer question 2": {"pl": "? Tej operacji nie da się cofnąć", "en": "? This operation cannot be undone"},
         "invite user title": {"pl": "Zaproś współpracownika", "en": "Invite coworker"},
-        "invite user label": {"pl": "W celu zaproszenia współpracownika,  podaj jego e-mail.  Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail.  Po weryfikacji,  dołączy do Twojej organizacji.", "en": "To invite a coworker, enter their email address. Your coworker will receive a message asking them to verify their email address. Once verified, they will join Your Organization."},
+        "invite user label": {"pl": "W celu zaproszenia współpracownika, podaj jego e-mail. Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail. Po weryfikacji, dołączy do Twojej organizacji.", "en": "To invite a coworker, enter their email address. Your coworker will receive a message asking them to verify their email address. Once verified, they will join Your Organization."},
         "invite": {"pl": "Zaproś", "en": "Invite"},
         "cancel": {"pl": "Anuluj", "en": "Cancel"},
-        "import layer title": {"pl": "Wgraj nową warstwę", "en": "Upload new layer"},
+        "import layer title": {"pl": "Prześlij warstwę do GIS.Box Lite", "en": "Upload layer to GIS.Box Lite"},
         "select_file_button": {"pl": "Wybierz plik", "en": "Select file"},
-        "select_file_label": {"pl": "lub przeciągnij go tutaj (GeoPackage)", "en": "or drop it here (GeoPackage)"},
+        "select_file_label": {"pl": "lub przeciągnij tutaj (GeoPackage)", "en": "or drop it here (GeoPackage)"},
         "layer_label": {"pl": "Wybierz warstwę", "en": "Select layer"},
         "add": {"pl": "Dodaj", "en": "Add"},
         "login title": {"pl": "Logowanie", "en": "Login"},
@@ -82,11 +83,11 @@ TRANSLATIONS = {
         "select_file": {"pl": "Wybierz plik GeoPackage", "en": "Select GeoPackage file"},
         "file_filter": {"pl": "Plik GeoPackage (*.gpkg)", "en": "GeoPackage file (*.gpkg)"},
         "removed": {"pl": "usunięty", "en": "removed"},
-        "password_hint_label": {"pl": '<html><head/><body><p><span style=" font-size:10pt;">Hasło musi składać się z minimum 8 znaków</span></p></body></html>', "en": '<html><head/><body><p><span style=" font-size:10pt;">The password must be at least 8 characters long</span></p></body></html>'},
+        "password_hint_label": {"pl": 'Minimum 8 znaków', "en": 'At least 8 characters'},
         "reset pwd title": {"pl": "Resetuj hasło", "en": "Reset password"},
         "reset_pwd_info_label": {"pl": "Podaj adres email konta GIS.Box Lite,  na który przesłana zostanie instrukcja resetowania hasła.", "en": "Enter the email address of the GIS.Box Lite account to which the password reset instructions will be sent."},
         "reset_button": {"pl": "Resetuj", "en": "Reset"},
-        "forgot_pwd_button": {"pl": "Zapomniano hasła?", "en": "Forgot password?"}
+        "forgot_pwd_button": {"pl": "Nie pamiętasz hasła?", "en": "Forgot password?"}
     },
     "info": {
         "invited user event": {"pl": "zaproszono współpracownika", "en": "invited coworker"},

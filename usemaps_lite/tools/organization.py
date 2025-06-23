@@ -35,7 +35,7 @@ class Organization(BaseLogicClass):
 
         self.dockwidget.users_tableview.setColumnWidth(0, 200)
         self.dockwidget.users_tableview.setColumnWidth(1, 100)
-        self.dockwidget.users_tableview.setColumnWidth(2, 100)
+        self.dockwidget.users_tableview.setColumnWidth(2, 50)
         self.dockwidget.users_tableview.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.dockwidget.users_tableview.selectionModel().selectionChanged.connect(self.on_users_tableview_selection_changed)
 

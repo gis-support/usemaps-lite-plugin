@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>579</width>
-    <height>190</height>
+    <height>120</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>579</width>
-    <height>190</height>
+    <height>120</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>579</width>
-    <height>180</height>
+    <height>120</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>W celu zaproszenia współpracownika,  podaj jego e-mail.  Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail.  Po weryfikacji,  dołączy do Twojej organizacji.</string>
+      <string>W celu zaproszenia współpracownika,  podaj jego e-mail.  Twój współpracownik otrzyma wiadomość z prośbą o weryfikację adresu e-mail.  Po weryfikacji, dołączy do Twojej organizacji.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

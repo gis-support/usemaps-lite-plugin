@@ -37,9 +37,25 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="leftMargin">
-         <number>70</number>
+        <property name="spacing">
+         <number>10</number>
         </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item>
          <widget class="QPushButton" name="select_file_button">
           <property name="minimumSize">
@@ -62,9 +78,22 @@
         <item>
          <widget class="QLabel" name="select_file_label">
           <property name="text">
-           <string>lub przeciągnij go tutaj (GeoPackage)</string>
+           <string>lub przeciągnij tutaj (GeoPackage)</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>

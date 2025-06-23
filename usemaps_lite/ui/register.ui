@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>566</width>
-    <height>300</height>
+    <height>242</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>566</width>
-    <height>300</height>
+    <height>242</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>566</width>
-    <height>300</height>
+    <height>242</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -58,8 +58,13 @@
    </item>
    <item>
     <widget class="QLabel" name="password_hint_label">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Hasło musi składać się z minimum 8 znaków&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Hasło musi składać się z minimum 8 znaków</string>
      </property>
     </widget>
    </item>

@@ -269,6 +269,9 @@ class Layers(BaseLogicClass, QObject):
                     if 'ogrinfo' in server_msg:
                         self.show_error_message(TRANSLATOR.translate_error('ogr error'))
                     
+                    elif server_msg == "limit exceeded":
+                        self.show_error_message(TRANSLATOR.translate_error('limit exceeded'))
+
                     else:
                         self.show_error_message(f"{TRANSLATOR.translate_error('import layer')}: {server_msg}")
 
@@ -370,7 +373,11 @@ class Layers(BaseLogicClass, QObject):
         """
 
         if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"{TRANSLATOR.translate_error('edit layer')}: {error_msg}")
+
+            if (server_msg := error_msg.get("server_message")) is not None:
+                self.show_error_message(f"{TRANSLATOR.translate_error('edit layer')}: {server_msg}")
+            else:
+                self.show_error_message(f"{TRANSLATOR.translate_error('edit layer')}: {error_msg}")
             return        
 
     def get_added_features(self, edit_buffer) -> List[Dict[str, Any]]:

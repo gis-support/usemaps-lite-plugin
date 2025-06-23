@@ -1,7 +1,7 @@
 [general]
 name=GIS.Box Lite
 qgisMinimumVersion=3.40
-version=0.2.1
+version=1.0.0
 author=GIS Support
 email=info@gis-support.pl
 license=GPL-3.0-only
