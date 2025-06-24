@@ -12,6 +12,10 @@ about=With the GIS.Box Lite plugin, you can use a free Lite account on the GIS.B
 description[pl]=GIS.Box Lite to darmowa część platformy do współpracy na mapach  GIS.Box, Pozwala na łatwą pracę zespołową w QGIS.
 about[pl]=Poprzez wtyczkę GIS.Box Lite możliwe jest korzystanie z bezpłatnego konta Lite platformy do współpracy na mapach GIS.Box. Wersja Lite pozwala na założenie konta, upload danych, zaproszenie współpracowników oraz umożliwia wspólną pracę (edycja danych przestrzennych, komunikacja poprzez wbudowany czat). Limit pojemności konta to 250 Mb danych oraz 10 współpracowników. Instrukcję korzystania przedstawia krótki film na stronie wtyczki
 
-repository=https://gis-support.pl/
+tracker=https://github.com/gis-support/usemaps-lite-plugin/issues
+repository=https://github.com/gis-support/usemaps-lite-plugin
+
 icon=resources/zielen_v1.jpg
 homepage=https://gis-support.pl/gis-box-lite
+
+changelog=Initial release
