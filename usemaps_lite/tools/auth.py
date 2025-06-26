@@ -219,30 +219,35 @@ class Auth(BaseLogicClass):
 
             server_message = error_msg.get('server_message')
 
-            if server_message == "user already exists":
-                self.show_error_message(TRANSLATOR.translate_error("register user exists"))
+            if server_message is not None:
 
-            if 'validation errors' in server_message:
-                
-                if "'Email'" in server_message:
-                    self.show_error_message(TRANSLATOR.translate_error("email validation"))
+                if server_message == "user already exists":
+                    self.show_error_message(TRANSLATOR.translate_error("register user exists"))
 
-                elif "'Password" in server_message:
+                if 'validation errors' in server_message:
                     
-                    if 'failed validation: max' in server_message:
-                        self.show_error_message(TRANSLATOR.translate_error("password too long"))
-                    
-                    elif 'failed validation: min' in server_message:
-                        self.show_error_message(TRANSLATOR.translate_error("password too short"))
-                    
-                    elif 'failed validation: eqfield' in server_message:
-                        self.show_error_message(TRANSLATOR.translate_error("password not equal"))
+                    if "'Email'" in server_message:
+                        self.show_error_message(TRANSLATOR.translate_error("email validation"))
 
-                    else:
-                        self.show_error_message(TRANSLATOR.translate_error("password validation"))
+                    elif "'Password" in server_message:
+                        
+                        if 'failed validation: max' in server_message:
+                            self.show_error_message(TRANSLATOR.translate_error("password too long"))
+                        
+                        elif 'failed validation: min' in server_message:
+                            self.show_error_message(TRANSLATOR.translate_error("password too short"))
+                        
+                        elif 'failed validation: eqfield' in server_message:
+                            self.show_error_message(TRANSLATOR.translate_error("password not equal"))
+
+                        else:
+                            self.show_error_message(TRANSLATOR.translate_error("password validation"))
+
+                else:
+                    self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg.get('server_message')}")
 
             else:
-                self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg.get('server_message')}")
+                self.show_error_message(f"{TRANSLATOR.translate_error('register')}: {error_msg}")
 
         else:
             data = response.get("data")

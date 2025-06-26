@@ -7,6 +7,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QStandardItem
 from qgis.PyQt.QtCore import Qt, QMetaType,  QDate, QDateTime, QTime, pyqtSignal
 from PyQt5.QtCore import QObject
+from qgis.utils import iface
 from qgis.core import (
     QgsVectorLayer,
     QgsProject,
@@ -89,18 +90,16 @@ class Layers(BaseLogicClass, QObject):
 
         download_finished = pyqtSignal(bool)
 
-        def __init__(self, layer_name: str, layer_type: str, layer_uuid: str, data: Dict[str, Any], parent):
+        def __init__(self, layer_name: str, layer_uuid: str, data: Dict[str, Any], layer, parent):
             description = f"{TRANSLATOR.translate_info('layer loading')}: {layer_name}"
             self.data = data
-            self.layer_name = layer_name
-            self.layer_type = layer_type
             self.layer_uuid = layer_uuid
+            self.layer = layer
             super().__init__(description, QgsTask.CanCancel)
             self.parent = parent
 
         def run(self):
-            layer = QgsVectorLayer(f"{self.layer_type.capitalize()}?crs=EPSG:4326", self.layer_name, "memory")
-            provider = layer.dataProvider()
+            provider = self.layer.dataProvider()
 
             fields = QgsFields()
 
@@ -118,8 +117,8 @@ class Layers(BaseLogicClass, QObject):
                     fields.append(QgsField(key, QMetaType.QString))
 
             provider.addAttributes(fields)
-            layer.updateFields()
-            layer.setEditorWidgetSetup(layer.fields().indexOf('_id'), QgsEditorWidgetSetup('Hidden', {}))
+            self.layer.updateFields()
+            self.layer.setEditorWidgetSetup(self.layer.fields().indexOf('_id'), QgsEditorWidgetSetup('Hidden', {}))
 
             for feat_data in self.data["features"]:
                 feat = QgsFeature()
@@ -138,22 +137,22 @@ class Layers(BaseLogicClass, QObject):
 
                 provider.addFeatures([feat])
 
-            layer.updateExtents()
-            layer.beforeCommitChanges.connect(self.parent.update_layer)
+            self.layer.updateExtents()
+            self.layer.beforeCommitChanges.connect(self.parent.update_layer)
 
             project = QgsProject.instance()
             custom_variables = project.customVariables()
             stored_mappings = custom_variables.get("usemaps_lite/id") or ''
             mappings = json.loads(stored_mappings) if stored_mappings else {}    
 
-            layer_qgis_id = layer.id()
-            
+            layer_qgis_id = self.layer.id()
+
             if layer_qgis_id not in mappings:
                 mappings[layer_qgis_id] = self.layer_uuid
                 custom_variables["usemaps_lite/id"] = json.dumps(mappings)
                 project.setCustomVariables(custom_variables)
 
-            project.addMapLayer(layer)
+            project.addMapLayer(self.layer)
             self.download_finished.emit(True)
 
             return True
@@ -172,12 +171,26 @@ class Layers(BaseLogicClass, QObject):
             return
 
         data = response.get("data")
-        self.task = self.LoadLayerToQgisTask(self.selected_layer_name, self.selected_layer_type,
-                                        self.selected_layer_uuid, data, self)
-        self.task.download_finished.connect(lambda _: self.show_success_message(f"{TRANSLATOR.translate_info('load layer success')}: {self.selected_layer_name}"))
+        layer = QgsVectorLayer(f"{self.selected_layer_type.capitalize()}?crs=EPSG:4326", self.selected_layer_name, "memory")
+        layer.setCustomProperty("skipMemoryLayersCheck", 1)
+
+        self.task = self.LoadLayerToQgisTask(self.selected_layer_name, self.selected_layer_uuid,
+                                             data, layer, self)
+        self.task.download_finished.connect(lambda _: self.on_load_layer_finished(layer))
 
         manager = QgsApplication.taskManager()
         manager.addTask(self.task)
+
+    def on_load_layer_finished(self, layer):
+        """
+        Usuwa ikonkę warstwy tymczasowej i wyświetla komunikat wczytania warstwy
+        """
+        node = QgsProject.instance().layerTreeRoot().findLayer(layer.id())
+        indicators = iface.layerTreeView().indicators(node)
+        if indicators:
+            iface.layerTreeView().removeIndicator(node, indicators[0])            
+
+        self.show_success_message(f"{TRANSLATOR.translate_info('load layer success')}: {self.selected_layer_name}")
 
     def browse_gpkg_file(self) -> None:
         """
@@ -264,19 +277,23 @@ class Layers(BaseLogicClass, QObject):
                     if nested_error == 'Nie można zapisać' or 'Entity Too Large' in nested_error:
                         # nginx
                         self.show_error_message(TRANSLATOR.translate_error("gpkg too large", params={"mb_limit": ORGANIZATION_METADATA.get_mb_limit()}))
+                        return
 
                 if (server_msg := error_msg.get("server_message")) is not None:
                     if 'ogrinfo' in server_msg:
                         self.show_error_message(TRANSLATOR.translate_error('ogr error'))
-                    
+
                     elif server_msg == "limit exceeded":
                         self.show_error_message(TRANSLATOR.translate_error('limit exceeded'))
 
                     else:
                         self.show_error_message(f"{TRANSLATOR.translate_error('import layer')}: {server_msg}")
 
+                    return
+
                 else:
                     self.show_error_message(f"{TRANSLATOR.translate_error('import layer')}: {error_msg}")
+                    return
 
             else:
                 self.show_success_message(TRANSLATOR.translate_info('import layer success'))

@@ -1,16 +1,16 @@
 [general]
 name=GIS.Box Lite
 qgisMinimumVersion=3.40
-version=1.0.0
+version=1.0.1
 author=GIS Support
 email=info@gis-support.pl
 license=GPL-3.0-only
 
 description=GIS.Box Lite is the free version of the GIS.Box platform for collaborative mapping. It enables easy teamwork in QGIS.
-about=With the GIS.Box Lite plugin, you can use a free Lite account on the GIS.Box collaborative mapping platform. The Lite version allows you to create an account, upload data, invite collaborators, and work together (including spatial data editing and communication via a built-in chat). The Lite account has a storage limit of 250 MB and supports up to 10 collaborators. A short instructional video is available on the plugin's page
+about=With the GIS.Box Lite plugin, you can use a free Lite account on the GIS.Box collaborative mapping platform. The Lite version allows you to create an account, upload data, invite collaborators, and work together (including spatial data editing and communication via a built-in chat). The Lite account has a storage limit of 100 MB and supports up to 20 collaborators. A short instructional video is available on the plugin's page
 
 description[pl]=GIS.Box Lite to darmowa część platformy do współpracy na mapach  GIS.Box, Pozwala na łatwą pracę zespołową w QGIS.
-about[pl]=Poprzez wtyczkę GIS.Box Lite możliwe jest korzystanie z bezpłatnego konta Lite platformy do współpracy na mapach GIS.Box. Wersja Lite pozwala na założenie konta, upload danych, zaproszenie współpracowników oraz umożliwia wspólną pracę (edycja danych przestrzennych, komunikacja poprzez wbudowany czat). Limit pojemności konta to 250 Mb danych oraz 10 współpracowników. Instrukcję korzystania przedstawia krótki film na stronie wtyczki
+about[pl]=Poprzez wtyczkę GIS.Box Lite możliwe jest korzystanie z bezpłatnego konta Lite platformy do współpracy na mapach GIS.Box. Wersja Lite pozwala na założenie konta, upload danych, zaproszenie współpracowników oraz umożliwia wspólną pracę (edycja danych przestrzennych, komunikacja poprzez wbudowany czat). Limit pojemności konta to 100 Mb danych oraz 20 współpracowników. Instrukcję korzystania przedstawia krótki film na stronie wtyczki
 
 tracker=https://github.com/gis-support/usemaps-lite-plugin/issues
 repository=https://github.com/gis-support/usemaps-lite-plugin
@@ -18,4 +18,9 @@ repository=https://github.com/gis-support/usemaps-lite-plugin
 icon=resources/zielen_v1.jpg
 homepage=https://gis-support.pl/gis-box-lite
 
-changelog=Initial release
+changelog=1.0.1 - poprawa opisu,
+        naprawa błędu z niekatywnym przyciskiem zapisu zmian w warstwie,
+        poprawiona obsługa błędów przy rejestracji i wgrywaniu warstw,
+        poprawka do wyglądu tabeli ze współpracownikami
+
+    1.0.0 - pierwsze wydanie

@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>446</width>
+    <width>465</width>
     <height>828</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>446</width>
+    <width>465</width>
     <height>441</height>
    </size>
   </property>
@@ -24,7 +24,7 @@
     <item>
      <widget class="QLabel" name="info_label">
       <property name="text">
-       <string>Lorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsumLorem ipsum</string>
+       <string>GIS.Box Lite to darmowa część platformy do współpracy na mapach GIS.Box. Pozwala na łatwą pracę zespołową w QGIS. Dowiedz się więcej na &lt;a href=&quot;https://gis-support.pl/gis-box-lite&quot;&gt;stronie GIS.Box Lite&lt;/a&gt;</string>
       </property>
       <property name="textFormat">
        <enum>Qt::RichText</enum>
@@ -133,7 +133,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QListView" name="events_listview"/>
+         <widget class="QListView" name="events_listview">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -192,17 +196,20 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QPushButton" name="import_layer_button">
             <property name="minimumSize">
              <size>
-              <width>180</width>
+              <width>220</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>180</width>
+              <width>220</width>
               <height>16777215</height>
              </size>
             </property>

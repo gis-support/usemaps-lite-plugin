@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from PyQt5.Qt import QStandardItem
 from qgis.PyQt.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QHeaderView
 
 from usemaps_lite.tools.base_logic_class import BaseLogicClass
 from usemaps_lite.ui.invite_user import InviteUserDialog
@@ -36,6 +36,7 @@ class Organization(BaseLogicClass):
         self.dockwidget.users_tableview.setColumnWidth(0, 200)
         self.dockwidget.users_tableview.setColumnWidth(1, 100)
         self.dockwidget.users_tableview.setColumnWidth(2, 50)
+        self.dockwidget.users_tableview.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.dockwidget.users_tableview.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.dockwidget.users_tableview.selectionModel().selectionChanged.connect(self.on_users_tableview_selection_changed)
 
