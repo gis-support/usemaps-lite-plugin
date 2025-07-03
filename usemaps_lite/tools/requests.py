@@ -1,9 +1,10 @@
 import json
 import uuid
 import os
+from typing import Union
 
 from qgis.core import QgsNetworkAccessManager
-from PyQt5.QtCore import QObject, QUrl, QByteArray, pyqtSignal, QTimer
+from PyQt5.QtCore import QObject, QUrl, QByteArray, pyqtSignal, QTimer, QCoreApplication
 from PyQt5.QtNetwork import QNetworkRequest, QNetworkReply
 from PyQt5.QtNetwork import QHttpMultiPart, QHttpPart
 from PyQt5.QtCore import QFile, QIODevice
@@ -86,6 +87,7 @@ class ApiClient(QObject):
                 parsed_content = {"raw_response": content, "message": "Invalid JSON response from server."}
             response_data["data"] = parsed_content
 
+        self.result = response_data
         if callback:
             callback(response_data)
         reply.deleteLater()
@@ -146,6 +148,107 @@ class ApiClient(QObject):
         reply.finished.connect(lambda: self._handle_response(reply))
 
         multi_part.setParent(reply)
+
+    def simple_get(self, url) -> Union[dict, QNetworkReply]:
+        """Wykonuje synchroniczny request GET"""
+        self.result = None
+        self.error_occurred = False
+
+        def try_request(url):
+
+            url = QUrl(self.base_url + url)
+            request = QNetworkRequest(url)
+
+            request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+
+            if self.auth_token:
+                request.setRawHeader(b"Authorization", f"Bearer {self.auth_token}".encode("utf-8"))
+
+            reply = self.nam.get(request)
+
+            # reply.downloadProgress.connect( lambda recv, total: self.downloadProgress.emit(self.set_progress(recv, total)))
+            reply.finished.connect(lambda: self._handle_response(reply))
+            return reply
+
+        reply = try_request(url)
+
+        app = QCoreApplication.instance()
+        while self.result is None and not reply.isFinished():
+            app.processEvents()
+
+        return self.result
+
+    def simple_post_file(self, endpoint, file_path) -> Union[dict, QNetworkReply]:
+        """
+        Wykonuje synchroniczny request POST z przesyłaniem pliku.
+        """
+        self.result = None
+        self.error_occurred = False
+
+        url = QUrl(self.base_url + endpoint)
+        request = QNetworkRequest(url)
+
+        if self.auth_token:
+            request.setRawHeader(b"Authorization", f"Bearer {self.auth_token}".encode("utf-8"))
+
+        multi_part = QHttpMultiPart(QHttpMultiPart.FormDataType)
+
+        file_part = QHttpPart()
+        file_part.setHeader(QNetworkRequest.ContentDispositionHeader,
+                            f'form-data; name="file"; filename="{os.path.basename(file_path)}"')
+        file_part.setHeader(QNetworkRequest.ContentTypeHeader, "application/octet-stream")
+
+        file = QFile(file_path)
+        if not file.open(QIODevice.ReadOnly):
+            return {"error": f"Nie udało się otworzyć pliku: {file_path}"}
+
+        file_part.setBodyDevice(file)
+        file.setParent(multi_part)
+        multi_part.append(file_part)
+
+        reply = self.nam.post(request, multi_part)
+        reply.setProperty("endpoint", endpoint)
+        reply.finished.connect(lambda: self._handle_response(reply))
+
+        multi_part.setParent(reply)
+
+        app = QCoreApplication.instance()
+        while self.result is None and not reply.isFinished():
+            app.processEvents()
+
+        return self.result
+
+
+    def simple_post(self, url, data: dict = None) -> Union[dict, QNetworkReply]:
+        """Wykonuje synchroniczny request POST do podanego URL"""
+        self.result = None
+        self.error_occurred = False
+
+        def try_request(url, body):
+            url = QUrl(self.base_url + url)
+            request = QNetworkRequest(url)
+            request.setHeader(QNetworkRequest.ContentTypeHeader, "application/json")
+
+            if self.auth_token:
+                request.setRawHeader(b"Authorization", f"Bearer {self.auth_token}".encode("utf-8"))
+
+            reply = self.nam.post(request, body)
+            # reply.downloadProgress.connect( lambda recv, total: self.downloadProgress.emit(self.set_progress(recv, total)))
+            reply.finished.connect(lambda: self._handle_response(reply))
+            return reply
+
+        if data:
+            data = str.encode(json.dumps(data))
+        else:
+            data = b''
+
+        reply = try_request(url, data)
+
+        app = QCoreApplication.instance()
+        while self.result is None and not reply.isFinished():
+            app.processEvents()
+
+        return self.result
 
     def start_listening(self) -> None:
         """

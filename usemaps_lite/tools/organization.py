@@ -168,7 +168,7 @@ class Organization(BaseLogicClass):
 
         email = data.get("email")
         user_uuid = data.get("uuid")
-        verified = "Tak" if data.get("verified") else "Nie"
+        verified = TRANSLATOR.translate_info("yes") if data.get("verified") else TRANSLATOR.translate_info("no")
 
         email_item = QStandardItem(email)
         email_item.setData(user_uuid, Qt.UserRole)

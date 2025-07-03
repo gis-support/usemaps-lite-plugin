@@ -81,24 +81,37 @@ class Layers(BaseLogicClass, QObject):
 
         self.show_info_message(f"{TRANSLATOR.translate_info('load layer start')}: {self.selected_layer_name}")
 
-        self.api.get(
-            f"org/layers/{selected_layer_uuid}/geojson",
-            callback=self.handle_load_geojson_response
-        )
+        layer = QgsVectorLayer(f"{self.selected_layer_type.capitalize()}?crs=EPSG:4326", self.selected_layer_name, "memory")
+        layer.setCustomProperty("skipMemoryLayersCheck", 1)
+
+        self.task = self.LoadLayerToQgisTask(self.selected_layer_name, self.selected_layer_uuid,
+                                            layer, self)
+        self.task.download_finished.connect(lambda _: self.on_load_layer_finished(layer))
+
+        manager = QgsApplication.taskManager()
+        manager.addTask(self.task)
 
     class LoadLayerToQgisTask(QgsTask):
 
         download_finished = pyqtSignal(bool)
 
-        def __init__(self, layer_name: str, layer_uuid: str, data: Dict[str, Any], layer, parent):
+        def __init__(self, layer_name: str, layer_uuid: str, layer, parent):
             description = f"{TRANSLATOR.translate_info('layer loading')}: {layer_name}"
-            self.data = data
             self.layer_uuid = layer_uuid
             self.layer = layer
             super().__init__(description, QgsTask.CanCancel)
             self.parent = parent
 
         def run(self):
+
+            response = self.parent.api.simple_get(f"org/layers/{self.layer_uuid}/geojson")
+
+            if (error_msg := response.get("error")) is not None:
+
+                self.show_error_message(f"{TRANSLATOR.translate_error('load layer')}: {error_msg}")
+                return
+
+            self.data = response.get("data")
             provider = self.layer.dataProvider()
 
             fields = QgsFields()
@@ -159,27 +172,6 @@ class Layers(BaseLogicClass, QObject):
 
         def finished(self, result: bool):
             pass
-
-
-    def handle_load_geojson_response(self, response: Dict[str, Any]) -> None:
-        """
-        Wczytuje pobrany geojson wybranej warstwy do projektu w QGIS.
-        """
-
-        if (error_msg := response.get("error")) is not None:
-            self.show_error_message(f"{TRANSLATOR.translate_error('load layer')}: {error_msg}")
-            return
-
-        data = response.get("data")
-        layer = QgsVectorLayer(f"{self.selected_layer_type.capitalize()}?crs=EPSG:4326", self.selected_layer_name, "memory")
-        layer.setCustomProperty("skipMemoryLayersCheck", 1)
-
-        self.task = self.LoadLayerToQgisTask(self.selected_layer_name, self.selected_layer_uuid,
-                                             data, layer, self)
-        self.task.download_finished.connect(lambda _: self.on_load_layer_finished(layer))
-
-        manager = QgsApplication.taskManager()
-        manager.addTask(self.task)
 
     def on_load_layer_finished(self, layer):
         """
@@ -260,17 +252,35 @@ class Layers(BaseLogicClass, QObject):
         self.import_layer_dialog.hide()
         self.show_info_message(TRANSLATOR.translate_info('import layer start'))
 
-        self.api.post_file(
-            endpoint="org/upload",
-            file_path=file_path_to_upload,
-            callback=self.handle_upload_response_and_cleanup(file_path_to_upload, is_temp_file)
-        )
 
-    def handle_upload_response_and_cleanup(self, file_path_to_clean: str, is_temp_file: bool):
+        self.task = self.UploadLayerTask(file_path_to_upload, is_temp_file,
+                                            self)
+        self.task.upload_finished.connect(self.on_upload_layer_finished)
+
+        manager = QgsApplication.taskManager()
+        manager.addTask(self.task)
+
+    def on_upload_layer_finished(self):
         """
-        Obsługuje odpowiedź po próbie wgrania pliku gpkg.
+        Wyświetla komunikat wgrania warstwy
         """
-        def callback_func(response: Dict[str, Any]):
+        self.show_success_message(f"{TRANSLATOR.translate_info('import layer success')}")
+
+    class UploadLayerTask(QgsTask):
+
+        upload_finished = pyqtSignal(bool)
+
+        def __init__(self, file_path_to_upload: str, is_temp_file: str, parent):
+            description = f"{TRANSLATOR.translate_info('import layer start')}"
+            self.file_path_to_upload = file_path_to_upload
+            self.is_temp_file = is_temp_file
+            super().__init__(description, QgsTask.CanCancel)
+            self.parent = parent
+
+        def run(self):
+
+            response = self.parent.api.simple_post_file("org/upload", self.file_path_to_upload)
+
             if (error_msg := response.get("error")) is not None:
 
                 if (nested_error := error_msg.get("error")) is not None:
@@ -299,10 +309,13 @@ class Layers(BaseLogicClass, QObject):
                 self.show_success_message(TRANSLATOR.translate_info('import layer success'))
 
             # Sprzątanie: usuń plik TYLKO jeśli był to plik tymczasowy
-            if is_temp_file and os.path.exists(file_path_to_clean):
-                os.remove(file_path_to_clean)
+            if self.is_temp_file and os.path.exists(self.file_path_to_upload):
+                os.remove(self.file_path_to_upload)
+            self.upload_finished.emit(True)
+            return True
 
-        return callback_func
+        def finished(self, result: bool):
+            pass
 
     def remove_selected_layer(self):
         """
