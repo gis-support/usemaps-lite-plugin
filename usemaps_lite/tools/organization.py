@@ -34,7 +34,7 @@ class Organization(BaseLogicClass):
         self.event_handler.register_event_handler(Event.OFFLINE_USER, self.handle_offline_user_event)
 
         self.dockwidget.users_tableview.setColumnWidth(0, 200)
-        self.dockwidget.users_tableview.setColumnWidth(1, 100)
+        self.dockwidget.users_tableview.setColumnWidth(1, 120)
         self.dockwidget.users_tableview.setColumnWidth(2, 50)
         self.dockwidget.users_tableview.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.dockwidget.users_tableview.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
