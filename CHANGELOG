@@ -1,0 +1,9 @@
+1.1 
+Progressbar wczytywania/wgrywania warstw uwzględnia etap odpytywania API, poprawiono tłumaczenia
+Poprawa opisu
+Naprawa błędu z niekatywnym przyciskiem zapisu zmian w warstwie
+Poprawiona obsługa błędów przy rejestracji i wgrywaniu warstw
+Poprawka do wyglądu tabeli ze współpracownikami
+
+1.0
+Pierwsze wydanie
